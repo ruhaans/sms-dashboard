@@ -5,151 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live SMS Dashboard</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #10b981;
-            --border: #334155;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
             margin: 0;
             padding: 20px;
-            display: flex;
-            justify-content: center;
         }
-
         .container {
-            width: 100%;
-            max-width: 800px;
+            max-width: 600px;
+            margin: 0 auto;
         }
-
-        header {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .live-indicator {
-            width: 10px;
-            height: 10px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 1rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
             margin-bottom: 20px;
-            box-sizing: border-box;
         }
-
-        .search-box:focus {
-            outline: 2px solid var(--accent);
-        }
-
-        #sms-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
         .sms-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in;
         }
-
-        .sms-card:hover {
-            transform: translateY(-2px);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .sms-meta {
+        .meta {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            color: #10b981;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
-
-        .sender-badge {
-            background-color: rgba(16, 185, 129, 0.15);
-            color: var(--accent);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
+        .time {
+            color: #94a3b8;
+            font-weight: normal;
         }
-
-        .device-info {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            margin-top: 8px;
-            border-top: 1px dashed var(--border);
-            padding-top: 8px;
-        }
-
-        .timestamp {
-            color: var(--text-muted);
-        }
-
-        .message-body {
+        .msg {
             margin: 0;
             line-height: 1.5;
             white-space: pre-wrap;
-            word-break: break-word;
         }
-
-        .no-data {
-            text-align: center;
-            color: var(--text-muted);
+        .info {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 8px;
+            border-top: 1px dashed #334155;
+            padding-top: 5px;
+        }
+        .error {
+            color: #ef4444;
             padding: 20px;
+            text-align: center;
         }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.5; }
+        .loading {
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <h1><span class="live-indicator"></span> Live SMS Feed</h1>
-            <div id="counter" style="color: var(--text-muted); font-size: 0.9rem;">Connecting...</div>
-        </header>
-
-        <input type="text" id="search" class="search-box" placeholder="🔍 Filter by sender, message content, or device...">
-
+        <div class="header">
+            <h2>📱 Live SMS Feed</h2>
+            <div id="counter">Connecting...</div>
+        </div>
         <div id="sms-container">
-            <div class="no-data">Connecting to secure database stream...</div>
+            <div class="loading">⏳ Loading messages...</div>
         </div>
     </div>
 
@@ -157,90 +88,82 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
+        // Public database - only databaseURL needed
+        const app = initializeApp({
             databaseURL: "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        });
         
-        // Listen directly to the root object 
-        const smsRef = ref(db, '/'); 
+        const db = getDatabase(app);
+        const container = document.getElementById('sms-container');
+        const counter = document.getElementById('counter');
 
-        let localSmsCache = [];
+        console.log("📡 Connecting to Firebase...");
 
+        // Listen to the 'smsData' node (where your data actually is)
+        const smsRef = ref(db, 'smsData');
+        
         onValue(smsRef, (snapshot) => {
-            const rawData = snapshot.val();
+            const data = snapshot.val();
             
-            if (!rawData) {
-                document.getElementById('sms-container').innerHTML = '<div class="no-data">Database is empty.</div>';
-                document.getElementById('counter').innerText = '0 messages';
+            if (!data) {
+                container.innerHTML = '<div class="error">📭 No SMS data available</div>';
+                counter.innerText = "0 messages";
                 return;
             }
 
-            // Extract the common dictionary cleanly block
-            let finalTarget = rawData.common ? rawData.common : rawData;
-
-            // Simple map that forces array preservation without key format strictness
-            const itemsArray = [];
-            for (let key in finalTarget) {
-                if (finalTarget.hasOwnProperty(key) && finalTarget[key]) {
-                    itemsArray.push(finalTarget[key]);
-                }
-            }
-
-            // Reverse the array directly so recent ones load at the top
-            localSmsCache = itemsArray.reverse();
+            // Convert object to array of messages
+            const messagesList = Object.values(data);
             
-            document.getElementById('counter').innerText = `${localSmsCache.length} messages received`;
-            renderList(localSmsCache);
-        });
+            // Sort by time (newest first)
+            messagesList.sort((a, b) => {
+                if (a.time > b.time) return -1;
+                if (a.time < b.time) return 1;
+                return 0;
+            });
 
-        function renderList(items) {
-            const container = document.getElementById('sms-container');
+            console.log(`✅ Loaded ${messagesList.length} messages`);
+            counter.innerText = `${messagesList.length} messages`;
             container.innerHTML = '';
 
-            if (items.length === 0) {
-                container.innerHTML = '<div class="no-data">No matching messages found.</div>';
+            if (messagesList.length === 0) {
+                container.innerHTML = '<div class="error">📭 No messages found</div>';
                 return;
             }
 
-            items.forEach((sms) => {
-                const sender = sms.sender || "Unknown Sender";
-                const message = sms.message || "(Empty Message)";
+            // Display messages
+            messagesList.forEach((sms) => {
+                const sender = sms.sender || "Unknown";
+                const message = sms.message || "";
                 const time = sms.time || "N/A";
                 const info = sms.info || "";
+                const deviceId = sms.deviceId || "";
 
                 const card = document.createElement('div');
                 card.className = 'sms-card';
                 card.innerHTML = `
-                    <div class="sms-meta">
-                        <span class="sender-badge">${escapeHtml(sender)}</span>
-                        <span class="timestamp">${escapeHtml(time)}</span>
+                    <div class="meta">
+                        <span>📨 ${sender}</span>
+                        <span class="time">🕐 ${time}</span>
                     </div>
-                    <p class="message-body">${escapeHtml(message)}</p>
-                    ${info ? `<div class="device-info">⚙️ ${escapeHtml(info)}</div>` : ''}
+                    <p class="msg">${message}</p>
+                    ${info ? `<div class="info">⚙️ ${info}</div>` : ''}
+                    ${deviceId ? `<div class="info">📱 ${deviceId}</div>` : ''}
                 `;
                 container.appendChild(card);
             });
-        }
 
-        // Live Filtering
-        document.getElementById('search').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = localSmsCache.filter(sms => {
-                return (
-                    (sms.sender && sms.sender.toLowerCase().includes(query)) ||
-                    (sms.message && sms.message.toLowerCase().includes(query)) ||
-                    (sms.info && sms.info.toLowerCase().includes(query))
-                );
-            });
-            renderList(filtered);
+        }, (error) => {
+            console.error("❌ Firebase error:", error);
+            container.innerHTML = `
+                <div class="error">
+                    ❌ Error connecting to database<br>
+                    <small>${error.message}</small>
+                </div>
+            `;
+            counter.innerText = "Error";
         });
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+        console.log("📡 Listening on path: /smsData");
     </script>
 </body>
 </html>
