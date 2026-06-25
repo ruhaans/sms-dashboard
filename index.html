@@ -143,7 +143,7 @@
     <div class="container">
         <header>
             <h1><span class="live-indicator"></span> Live SMS Feed</h1>
-            <div id="counter" style="color: var(--text-muted); font-size: 0.9rem;">Loading logs...</div>
+            <div id="counter" style="color: var(--text-muted); font-size: 0.9rem;">Connecting...</div>
         </header>
 
         <input type="text" id="search" class="search-box" placeholder="🔍 Filter by sender, message content, or device...">
@@ -153,55 +153,58 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your specific Firebase configurations
         const firebaseConfig = {
             databaseURL: "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-        // Initialize App & Database
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const smsRef = ref(db, 'common');
+        
+        // Target the root or 'common' explicitly depending on data nesting
+        const smsRef = ref(db, '/'); 
 
         let localSmsCache = [];
 
-        // Establish the persistent stream (WebSocket equivalent connection)
         onValue(smsRef, (snapshot) => {
-            const data = snapshot.val();
+            let data = snapshot.val();
+            
             if (!data) {
-                document.getElementById('sms-container').innerHTML = '<div class="no-data">No SMS logs found in database.</div>';
+                document.getElementById('sms-container').innerHTML = '<div class="no-data">No data found.</div>';
                 document.getElementById('counter').innerText = '0 messages';
                 return;
             }
 
-            // Transform object into an array and REVERSE it so the newest entries are at the top
-            localSmsCache = Object.entries(data).reverse();
+            // Un-nest data if it wraps it under a 'common' key object field
+            if (data.common) {
+                data = data.common;
+            }
+
+            // Map and filter out invalid/empty keys safely
+            localSmsCache = Object.entries(data)
+                .filter(([id, sms]) => sms && (sms.sender || sms.message))
+                .reverse(); 
             
-            // Display total message count
             document.getElementById('counter').innerText = `${localSmsCache.length} messages received`;
-            
-            // Render the elements to screen
             renderList(localSmsCache);
         });
 
-        // Search/Filter function
         function renderList(items) {
             const container = document.getElementById('sms-container');
             container.innerHTML = '';
 
-            if(items.length === 0) {
+            if (items.length === 0) {
                 container.innerHTML = '<div class="no-data">No matching messages found.</div>';
                 return;
             }
 
             items.forEach(([id, sms]) => {
-                // Handle missing or empty optional nodes gracefully
                 const sender = sms.sender || "Unknown Sender";
-                const message = sms.message || "";
+                const message = sms.message || "(Empty Message)";
                 const time = sms.time || "N/A";
                 const info = sms.info || "";
 
@@ -219,10 +222,8 @@
             });
         }
 
-        // Live filtering listener
         document.getElementById('search').addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
-            
             const filtered = localSmsCache.filter(([id, sms]) => {
                 return (
                     (sms.sender && sms.sender.toLowerCase().includes(query)) ||
@@ -230,11 +231,9 @@
                     (sms.info && sms.info.toLowerCase().includes(query))
                 );
             });
-            
             renderList(filtered);
         });
 
-        // Helper to prevent cross-site scripting vulnerabilities from raw database fields
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
