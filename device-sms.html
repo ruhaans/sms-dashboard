@@ -201,7 +201,7 @@
         const smsRef = ref(db, 'common/smsData');
 
         // ============================================
-        // Load device info using Firebase (no CORS)
+        // Load device info using Firebase
         // ============================================
         onValue(ref(db, `users/${deviceId}`), (snapshot) => {
             const data = snapshot.val();
@@ -249,13 +249,17 @@
 
             // Convert to array and filter by deviceId
             const allMessages = Object.values(data);
-            const deviceMessages = allMessages
-                .filter(sms => sms.deviceId === deviceId)
-                .sort((a, b) => {
-                    if (a.time > b.time) return -1;
-                    if (a.time < b.time) return 1;
-                    return 0;
-                });
+            
+            // Filter and sort in separate steps for clarity
+            const filteredMessages = allMessages.filter(function(sms) {
+                return sms.deviceId === deviceId;
+            });
+            
+            const deviceMessages = filteredMessages.sort(function(a, b) {
+                if (a.time > b.time) return -1;
+                if (a.time < b.time) return 1;
+                return 0;
+            });
 
             console.log(`📨 Found ${deviceMessages.length} messages for device ${deviceId}`);
 
@@ -274,7 +278,9 @@
             }
 
             const fragment = document.createDocumentFragment();
-            for (const sms of deviceMessages) {
+            
+            for (let i = 0; i < deviceMessages.length; i++) {
+                const sms = deviceMessages[i];
                 const card = document.createElement('div');
                 card.className = 'sms-card';
                 card.innerHTML = `
@@ -287,6 +293,7 @@
                 `;
                 fragment.appendChild(card);
             }
+            
             container.appendChild(fragment);
 
             // Update status
