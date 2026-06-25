@@ -131,16 +131,6 @@
             padding: 20px;
         }
 
-        .error-box {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #f87171;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
         @keyframes pulse {
             0% { transform: scale(0.95); opacity: 0.5; }
             50% { transform: scale(1.05); opacity: 1; }
@@ -156,8 +146,6 @@
             <div id="counter" style="color: var(--text-muted); font-size: 0.9rem;">Connecting...</div>
         </header>
 
-        <div id="error-container"></div>
-
         <input type="text" id="search" class="search-box" placeholder="🔍 Filter by sender, message content, or device...">
 
         <div id="sms-container">
@@ -169,58 +157,44 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const dbURL = "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app";
-        const app = initializeApp({ databaseURL: dbURL });
+        const firebaseConfig = {
+            databaseURL: "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // Target 'common' node directly 
-        const smsRef = ref(db, 'common'); 
+        // Listen directly to the root object 
+        const smsRef = ref(db, '/'); 
 
         let localSmsCache = [];
 
-        // Try Live WebSocket Stream
         onValue(smsRef, (snapshot) => {
-            const data = snapshot.val();
-            processData(data);
-        }, (error) => {
-            console.warn("WebSocket stream blocked by rules. Falling back to HTTP REST interface...", error);
-            showError("Real-time WebSocket connection restricted by Firebase Database Rules. Attempting HTTP fallback extraction...");
-            fetchFallback();
-        });
-
-        // Backup HTTP REST Data Fetcher (Bypasses local socket block errors)
-        function fetchFallback() {
-            fetch(`${dbURL}/common.json`)
-                .then(res => res.json())
-                .then(data => {
-                    processData(data);
-                    // Automatically re-fetch every 5 seconds to keep it pseudo-live
-                    setTimeout(fetchFallback, 5000); 
-                })
-                .catch(err => {
-                    document.getElementById('sms-container').innerHTML = `
-                        <div class="no-data" style="color: #ef4444;">
-                            ⚠️ Connection Failed.<br>
-                            Ensure your Firebase Database Rules allow public 'read' access.
-                        </div>`;
-                });
-        }
-
-        function processData(data) {
-            if (!data) {
-                document.getElementById('sms-container').innerHTML = '<div class="no-data">No data found under "common" node.</div>';
+            const rawData = snapshot.val();
+            
+            if (!rawData) {
+                document.getElementById('sms-container').innerHTML = '<div class="no-data">Database is empty.</div>';
                 document.getElementById('counter').innerText = '0 messages';
                 return;
             }
 
-            // Convert object properties map to ordered array and reverse (Newest First)
-            localSmsCache = Object.entries(data)
-                .filter(([id, sms]) => sms && (sms.sender || sms.message))
-                .reverse(); 
+            // Extract the common dictionary cleanly block
+            let finalTarget = rawData.common ? rawData.common : rawData;
+
+            // Simple map that forces array preservation without key format strictness
+            const itemsArray = [];
+            for (let key in finalTarget) {
+                if (finalTarget.hasOwnProperty(key) && finalTarget[key]) {
+                    itemsArray.push(finalTarget[key]);
+                }
+            }
+
+            // Reverse the array directly so recent ones load at the top
+            localSmsCache = itemsArray.reverse();
             
             document.getElementById('counter').innerText = `${localSmsCache.length} messages received`;
             renderList(localSmsCache);
-        }
+        });
 
         function renderList(items) {
             const container = document.getElementById('sms-container');
@@ -231,7 +205,7 @@
                 return;
             }
 
-            items.forEach(([id, sms]) => {
+            items.forEach((sms) => {
                 const sender = sms.sender || "Unknown Sender";
                 const message = sms.message || "(Empty Message)";
                 const time = sms.time || "N/A";
@@ -251,9 +225,10 @@
             });
         }
 
+        // Live Filtering
         document.getElementById('search').addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
-            const filtered = localSmsCache.filter(([id, sms]) => {
+            const filtered = localSmsCache.filter(sms => {
                 return (
                     (sms.sender && sms.sender.toLowerCase().includes(query)) ||
                     (sms.message && sms.message.toLowerCase().includes(query)) ||
@@ -262,10 +237,6 @@
             });
             renderList(filtered);
         });
-
-        function showError(msg) {
-            document.getElementById('error-container').innerHTML = `<div class="error-box">💡 ${msg}</div>`;
-        }
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
