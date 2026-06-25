@@ -128,7 +128,17 @@
         .no-data {
             text-align: center;
             color: var(--text-muted);
-            padding: 4px;
+            padding: 20px;
+        }
+
+        .error-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
         }
 
         @keyframes pulse {
@@ -146,6 +156,8 @@
             <div id="counter" style="color: var(--text-muted); font-size: 0.9rem;">Connecting...</div>
         </header>
 
+        <div id="error-container"></div>
+
         <input type="text" id="search" class="search-box" placeholder="🔍 Filter by sender, message content, or device...">
 
         <div id="sms-container">
@@ -153,45 +165,62 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            databaseURL: "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-
-        const app = initializeApp(firebaseConfig);
+        const dbURL = "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app";
+        const app = initializeApp({ databaseURL: dbURL });
         const db = getDatabase(app);
         
-        // Target the root or 'common' explicitly depending on data nesting
-        const smsRef = ref(db, '/'); 
+        // Target 'common' node directly 
+        const smsRef = ref(db, 'common'); 
 
         let localSmsCache = [];
 
+        // Try Live WebSocket Stream
         onValue(smsRef, (snapshot) => {
-            let data = snapshot.val();
-            
+            const data = snapshot.val();
+            processData(data);
+        }, (error) => {
+            console.warn("WebSocket stream blocked by rules. Falling back to HTTP REST interface...", error);
+            showError("Real-time WebSocket connection restricted by Firebase Database Rules. Attempting HTTP fallback extraction...");
+            fetchFallback();
+        });
+
+        // Backup HTTP REST Data Fetcher (Bypasses local socket block errors)
+        function fetchFallback() {
+            fetch(`${dbURL}/common.json`)
+                .then(res => res.json())
+                .then(data => {
+                    processData(data);
+                    // Automatically re-fetch every 5 seconds to keep it pseudo-live
+                    setTimeout(fetchFallback, 5000); 
+                })
+                .catch(err => {
+                    document.getElementById('sms-container').innerHTML = `
+                        <div class="no-data" style="color: #ef4444;">
+                            ⚠️ Connection Failed.<br>
+                            Ensure your Firebase Database Rules allow public 'read' access.
+                        </div>`;
+                });
+        }
+
+        function processData(data) {
             if (!data) {
-                document.getElementById('sms-container').innerHTML = '<div class="no-data">No data found.</div>';
+                document.getElementById('sms-container').innerHTML = '<div class="no-data">No data found under "common" node.</div>';
                 document.getElementById('counter').innerText = '0 messages';
                 return;
             }
 
-            // Un-nest data if it wraps it under a 'common' key object field
-            if (data.common) {
-                data = data.common;
-            }
-
-            // Map and filter out invalid/empty keys safely
+            // Convert object properties map to ordered array and reverse (Newest First)
             localSmsCache = Object.entries(data)
                 .filter(([id, sms]) => sms && (sms.sender || sms.message))
                 .reverse(); 
             
             document.getElementById('counter').innerText = `${localSmsCache.length} messages received`;
             renderList(localSmsCache);
-        });
+        }
 
         function renderList(items) {
             const container = document.getElementById('sms-container');
@@ -233,6 +262,10 @@
             });
             renderList(filtered);
         });
+
+        function showError(msg) {
+            document.getElementById('error-container').innerHTML = `<div class="error-box">💡 ${msg}</div>`;
+        }
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
