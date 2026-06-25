@@ -48,6 +48,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .device-info-box .name {
             font-weight: 600;
@@ -127,6 +129,10 @@
             color: #94a3b8;
             border: 1px solid #334155;
         }
+        .status-badge.live {
+            color: #10b981;
+            border-color: #10b981;
+        }
         .error {
             color: #ef4444;
             padding: 20px;
@@ -195,7 +201,7 @@
         const smsRef = ref(db, 'common/smsData');
 
         // ============================================
-        // FIXED: Use Firebase SDK for device info (no CORS)
+        // Load device info using Firebase (no CORS)
         // ============================================
         onValue(ref(db, `users/${deviceId}`), (snapshot) => {
             const data = snapshot.val();
@@ -215,7 +221,7 @@
                 }
                 
                 const statsDiv = document.getElementById('deviceStats');
-                statsDiv.innerHTML = `📞 ${displayNumber} · 🔋 ${data.charge || 0}%`;
+                statsDiv.innerHTML = `📞 ${displayNumber} · 🔋 ${data.charge || 0}% · 📱 ${data.device_name || 'Unknown'}`;
             } else {
                 deviceNameEl.textContent = 'Device Not Found';
                 deviceIdEl.textContent = `ID: ${deviceId}`;
@@ -241,7 +247,7 @@
                 return;
             }
 
-            // Filter messages for this device
+            // Convert to array and filter by deviceId
             const allMessages = Object.values(data);
             const deviceMessages = allMessages
                 .filter(sms => sms.deviceId === deviceId)
@@ -258,7 +264,12 @@
             container.innerHTML = '';
 
             if (deviceMessages.length === 0) {
-                container.innerHTML = '<div class="no-msg">📭 No messages for this device</div>';
+                container.innerHTML = `
+                    <div class="no-msg">
+                        📭 No messages for this device<br>
+                        <small style="color:#475569;font-size:0.75rem;">Device ID: ${deviceId}</small>
+                    </div>
+                `;
                 return;
             }
 
@@ -277,6 +288,9 @@
                 fragment.appendChild(card);
             }
             container.appendChild(fragment);
+
+            // Update status
+            counter.className = 'status-badge live';
 
         }, (error) => {
             console.error('❌ Firebase error:', error);
