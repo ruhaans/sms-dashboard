@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>All SMS - Live Feed</title>
+
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -12,10 +14,12 @@
             margin: 0;
             padding: 20px;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
         }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -24,6 +28,7 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+
         .back-btn {
             color: #94a3b8;
             text-decoration: none;
@@ -33,10 +38,12 @@
             border-radius: 8px;
             transition: 0.2s;
         }
+
         .back-btn:hover {
             border-color: #10b981;
             color: #10b981;
         }
+
         .sms-card {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -45,35 +52,52 @@
             margin-bottom: 15px;
             animation: fadeIn 0.2s ease-in;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .meta {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
             font-size: 0.85rem;
             color: #10b981;
             margin-bottom: 8px;
             font-weight: bold;
         }
+
         .time {
             color: #94a3b8;
             font-weight: normal;
+            white-space: nowrap;
         }
+
         .msg {
             margin: 0;
             line-height: 1.5;
             white-space: pre-wrap;
+            word-break: break-word;
             font-size: 0.95rem;
         }
+
         .info {
             font-size: 0.75rem;
             color: #64748b;
             margin-top: 8px;
             border-top: 1px dashed #334155;
             padding-top: 5px;
+            word-break: break-word;
         }
+
         .device-id {
             font-size: 0.7rem;
             color: #475569;
@@ -81,11 +105,13 @@
             padding: 2px 8px;
             border-radius: 4px;
         }
+
         .loading {
             color: #94a3b8;
             text-align: center;
             padding: 20px;
         }
+
         .spinner {
             display: inline-block;
             width: 20px;
@@ -97,10 +123,17 @@
             margin-right: 10px;
             vertical-align: middle;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .status-badge {
             font-size: 0.75rem;
             padding: 4px 10px;
@@ -108,7 +141,14 @@
             background: #1e293b;
             color: #94a3b8;
             border: 1px solid #334155;
+            white-space: nowrap;
         }
+
+        .status-badge.live {
+            color: #10b981;
+            border-color: #10b981;
+        }
+
         .error {
             color: #ef4444;
             padding: 20px;
@@ -116,93 +156,466 @@
         }
     </style>
 </head>
+
 <body>
+
     <div class="container">
+
         <div class="header">
+
             <div>
                 <a href="index.html" class="back-btn">← Back</a>
                 <span style="margin-left: 12px;">📨 All SMS</span>
             </div>
-            <span id="counter" class="status-badge">Loading...</span>
+
+            <span id="counter" class="status-badge">
+                Loading...
+            </span>
+
         </div>
+
         <div id="sms-container">
+
             <div class="loading">
                 <span class="spinner"></span>
-                Loading messages...
+                Loading recent messages...
             </div>
+
         </div>
+
     </div>
 
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getDatabase, 
-            ref, 
-            onValue, 
-            query, 
-            limitToLast, 
-            orderByKey 
+
+        /*
+        ==========================================
+        FIREBASE IMPORTS
+        ==========================================
+        */
+
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+        import {
+            getDatabase,
+            ref,
+            query,
+            limitToLast,
+            onValue
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+
+        /*
+        ==========================================
+        HTML ELEMENTS
+        ==========================================
+        */
 
         const container = document.getElementById('sms-container');
         const counter = document.getElementById('counter');
 
+
+        /*
+        ==========================================
+        FIREBASE INITIALIZATION
+        ==========================================
+        */
+
         const app = initializeApp({
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com"
+
+            databaseURL:
+                "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
+
         });
+
+
         const db = getDatabase(app);
 
-        // Limit data fetching to the last 50 items directly on the server side
-        const smsRef = ref(db, 'common/smsData');
-        const recentSmsQuery = query(smsRef, orderByKey(), limitToLast(50));
+
+        /*
+        ==========================================
+        SMS DATABASE REFERENCE
+        ==========================================
+        */
+
+        const smsRef = ref(
+            db,
+            'common/smsData'
+        );
+
+
+        /*
+        ==========================================
+        FETCH ONLY THE LATEST 50 SMS
+        ==========================================
+
+        Your SMS records use Firebase Push IDs.
+
+        limitToLast(50) means Firebase will only
+        retrieve the latest 50 records instead of
+        downloading all 5000+ messages.
+
+        ==========================================
+        */
+
+        const recentSmsQuery = query(
+            smsRef,
+            limitToLast(50)
+        );
+
+
+        /*
+        ==========================================
+        CREATE SMS CARD
+        ==========================================
+        */
 
         function createSmsCard(sms) {
-            const sender = sms.sender || "Unknown";
-            const message = sms.message || "";
-            const time = sms.time || "N/A";
-            const info = sms.info || "";
-            const deviceId = sms.deviceId || "";
 
-            const card = document.createElement('div');
-            card.className = 'sms-card';
-            card.innerHTML = `
-                <div class="meta">
-                    <span>📨 ${sender}</span>
-                    <span class="time">🕐 ${time}</span>
-                </div>
-                <p class="msg">${message}</p>
-                ${info ? `<div class="info">⚙️ ${info}</div>` : ''}
-                ${deviceId ? `<div class="info">📱 Device: <span class="device-id">${deviceId}</span></div>` : ''}
-            `;
+            const sender =
+                sms.sender || "Unknown";
+
+            const message =
+                sms.message || "";
+
+            const time =
+                sms.time || "N/A";
+
+            const info =
+                sms.info || "";
+
+            const deviceId =
+                sms.deviceId || "";
+
+
+            // Main card
+            const card =
+                document.createElement('div');
+
+            card.className =
+                'sms-card';
+
+
+            // Meta section
+            const meta =
+                document.createElement('div');
+
+            meta.className =
+                'meta';
+
+
+            // Sender
+            const senderElement =
+                document.createElement('span');
+
+            senderElement.textContent =
+                `📨 ${sender}`;
+
+
+            // Time
+            const timeElement =
+                document.createElement('span');
+
+            timeElement.className =
+                'time';
+
+            timeElement.textContent =
+                `🕐 ${time}`;
+
+
+            meta.appendChild(
+                senderElement
+            );
+
+            meta.appendChild(
+                timeElement
+            );
+
+
+            // Message
+            const messageElement =
+                document.createElement('p');
+
+            messageElement.className =
+                'msg';
+
+            messageElement.textContent =
+                message;
+
+
+            card.appendChild(
+                meta
+            );
+
+            card.appendChild(
+                messageElement
+            );
+
+
+            /*
+            ======================================
+            OPTIONAL INFO
+            ======================================
+            */
+
+            if (info) {
+
+                const infoElement =
+                    document.createElement('div');
+
+                infoElement.className =
+                    'info';
+
+                infoElement.textContent =
+                    `⚙️ ${info}`;
+
+                card.appendChild(
+                    infoElement
+                );
+
+            }
+
+
+            /*
+            ======================================
+            OPTIONAL DEVICE ID
+            ======================================
+            */
+
+            if (deviceId) {
+
+                const deviceInfo =
+                    document.createElement('div');
+
+                deviceInfo.className =
+                    'info';
+
+
+                const deviceLabel =
+                    document.createTextNode(
+                        '📱 Device: '
+                    );
+
+
+                const deviceElement =
+                    document.createElement('span');
+
+                deviceElement.className =
+                    'device-id';
+
+                deviceElement.textContent =
+                    deviceId;
+
+
+                deviceInfo.appendChild(
+                    deviceLabel
+                );
+
+                deviceInfo.appendChild(
+                    deviceElement
+                );
+
+
+                card.appendChild(
+                    deviceInfo
+                );
+
+            }
+
+
             return card;
+
         }
 
-        onValue(recentSmsQuery, (snapshot) => {
-            const data = snapshot.val();
-            
-            if (!data) {
-                container.innerHTML = '<div class="error">📭 No messages found</div>';
-                counter.textContent = '0 messages';
-                return;
+
+        /*
+        ==========================================
+        LIVE FIREBASE LISTENER
+        ==========================================
+
+        This listens ONLY to the latest 50 SMS.
+
+        When a new SMS arrives:
+
+        1. New SMS enters the 50-message query
+        2. Oldest SMS drops out
+        3. New SMS appears at the top
+
+        ==========================================
+        */
+
+        onValue(
+
+            recentSmsQuery,
+
+            (snapshot) => {
+
+
+                /*
+                ==================================
+                NO SMS FOUND
+                ==================================
+                */
+
+                if (!snapshot.exists()) {
+
+                    container.innerHTML =
+                        '<div class="error">📭 No messages found</div>';
+
+                    counter.textContent =
+                        '0 messages';
+
+                    counter.classList.remove(
+                        'live'
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                ==================================
+                CREATE MESSAGE ARRAY
+                ==================================
+
+                Firebase Push IDs are returned
+                from oldest -> newest.
+
+                ==================================
+                */
+
+                const messages = [];
+
+
+                snapshot.forEach(
+                    (childSnapshot) => {
+
+                        messages.push({
+                            id: childSnapshot.key,
+                            ...childSnapshot.val()
+                        });
+
+                    }
+                );
+
+
+                /*
+                ==================================
+                REVERSE ORDER
+                ==================================
+
+                Before:
+                Oldest
+                ↓
+                Newest
+
+                After:
+                Newest
+                ↓
+                Oldest
+
+                ==================================
+                */
+
+                messages.reverse();
+
+
+                /*
+                ==================================
+                UPDATE COUNTER
+                ==================================
+                */
+
+                counter.textContent =
+                    `${messages.length} recent messages`;
+
+                counter.classList.add(
+                    'live'
+                );
+
+
+                /*
+                ==================================
+                CLEAR OLD DISPLAY
+                ==================================
+                */
+
+                container.innerHTML =
+                    '';
+
+
+                /*
+                ==================================
+                CREATE DOCUMENT FRAGMENT
+                ==================================
+
+                This improves rendering performance.
+                ==================================
+                */
+
+                const fragment =
+                    document.createDocumentFragment();
+
+
+                /*
+                ==================================
+                ADD 50 SMS CARDS
+                ==================================
+                */
+
+                for (const sms of messages) {
+
+                    fragment.appendChild(
+                        createSmsCard(sms)
+                    );
+
+                }
+
+
+                /*
+                ==================================
+                DISPLAY MESSAGES
+                ==================================
+                */
+
+                container.appendChild(
+                    fragment
+                );
+
+            },
+
+
+            /*
+            ======================================
+            FIREBASE ERROR
+            ======================================
+            */
+
+            (error) => {
+
+                console.error(
+                    'Firebase Error:',
+                    error
+                );
+
+                container.innerHTML =
+                    `<div class="error">❌ ${error.message}</div>`;
+
+                counter.textContent =
+                    'Error';
+
+                counter.classList.remove(
+                    'live'
+                );
+
             }
 
-            // Convert map to array and reverse so newest messages appear at the top
-            const messages = Object.values(data).reverse();
+        );
 
-            counter.textContent = `${messages.length} recent messages`;
-            container.innerHTML = '';
-            
-            const fragment = document.createDocumentFragment();
-            for (const sms of messages) {
-                fragment.appendChild(createSmsCard(sms));
-            }
-            container.appendChild(fragment);
-
-        }, (error) => {
-            console.error('Error:', error);
-            container.innerHTML = `<div class="error">❌ ${error.message}</div>`;
-            counter.textContent = 'Error';
-        });
     </script>
+
 </body>
 </html>
