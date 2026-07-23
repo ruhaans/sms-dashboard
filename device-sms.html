@@ -26,8 +26,6 @@
             padding-bottom: 40px;
         }
 
-        /* ===== HEADER ===== */
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -57,14 +55,9 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            touch-action: manipulation;
             min-height: 36px;
             min-width: 36px;
             justify-content: center;
-        }
-
-        .back-btn:active {
-            transform: scale(0.95);
         }
 
         .back-btn:hover {
@@ -91,9 +84,6 @@
             color: #10b981;
             border-color: #10b981;
         }
-
-
-        /* ===== DEVICE INFO ===== */
 
         .device-info-box {
             background: linear-gradient(145deg, #1a2332, #0f172a);
@@ -143,40 +133,21 @@
             border: 1px solid #2d3a4f;
         }
 
-        .device-info-box .stats .stat-item {
+        .stat-item {
             display: flex;
             align-items: center;
             gap: 4px;
-            white-space: nowrap;
         }
 
-        .device-info-box .stats .divider {
+        .divider {
             color: #334155;
-            user-select: none;
         }
-
-
-        /* ===== PHONE NUMBER ===== */
 
         .clickable-phone {
             cursor: pointer;
             color: #10b981;
-            transition: all 0.2s;
             padding: 2px 6px;
             border-radius: 4px;
-            touch-action: manipulation;
-            user-select: none;
-            position: relative;
-            min-height: 36px;
-            min-width: 36px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .clickable-phone:active {
-            transform: scale(0.95);
-            background: rgba(16, 185, 129, 0.1);
         }
 
         .clickable-phone::after {
@@ -185,9 +156,6 @@
             margin-left: 4px;
             opacity: 0.6;
         }
-
-
-        /* ===== TOAST ===== */
 
         .toast-message {
             position: fixed;
@@ -204,7 +172,6 @@
             transition: all 0.3s ease;
             pointer-events: none;
             z-index: 999;
-            box-shadow: 0 4px 20px rgba(16,185,129,0.3);
         }
 
         .toast-message.show {
@@ -212,28 +179,12 @@
             transform: translateX(-50%) translateY(0);
         }
 
-
-        /* ===== SMS CARDS ===== */
-
         .sms-card {
             background-color: #1e293b;
             border: 1px solid #334155;
             border-radius: 10px;
             padding: 14px 16px;
             margin-bottom: 12px;
-            animation: fadeIn 0.25s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .meta {
@@ -247,14 +198,14 @@
             gap: 4px;
         }
 
-        .meta .sender {
+        .sender {
             display: flex;
             align-items: center;
             gap: 6px;
             word-break: break-word;
         }
 
-        .meta .sender .sender-icon {
+        .sender-icon {
             width: 24px;
             height: 24px;
             border-radius: 50%;
@@ -276,7 +227,7 @@
         }
 
         .msg {
-            margin: 4px 0 0 0;
+            margin: 4px 0 0;
             line-height: 1.6;
             white-space: pre-wrap;
             font-size: 0.92rem;
@@ -292,9 +243,6 @@
             padding-top: 6px;
             word-break: break-word;
         }
-
-
-        /* ===== LOADING ===== */
 
         .loading {
             color: #94a3b8;
@@ -315,11 +263,7 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
+            to {
                 transform: rotate(360deg);
             }
         }
@@ -333,7 +277,7 @@
             border: 1px dashed #2d3a4f;
         }
 
-        .no-msg .big-icon {
+        .big-icon {
             font-size: 2.5rem;
             display: block;
             margin-bottom: 8px;
@@ -343,125 +287,33 @@
             color: #ef4444;
             text-align: center;
             padding: 30px 20px;
-            background: rgba(239,68,68,0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(239,68,68,0.2);
-            word-break: break-word;
         }
 
-
-        /* ===== RESPONSIVE ===== */
-
         @media (max-width: 480px) {
-
             body {
                 padding: 12px;
-            }
-
-            .header {
-                flex-direction: row;
-                gap: 8px;
-            }
-
-            .header-left {
-                gap: 6px;
-            }
-
-            .back-btn {
-                font-size: 0.75rem;
-                padding: 4px 10px;
             }
 
             .header-title {
                 font-size: 0.85rem;
             }
 
-            .status-badge {
-                font-size: 0.6rem;
-                padding: 3px 8px;
-            }
-
             .device-info-box {
                 padding: 12px 14px;
                 flex-direction: column;
                 align-items: stretch;
-                gap: 8px;
-            }
-
-            .device-info-box .name {
-                font-size: 0.95rem;
-            }
-
-            .device-info-box .stats {
-                font-size: 0.65rem;
-                padding: 4px 10px;
-                gap: 4px;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-            }
-
-            .device-info-box .stats .stat-item {
-                white-space: normal;
-                word-break: break-word;
-            }
-
-            .device-info-box .stats .divider {
-                display: none;
             }
 
             .sms-card {
                 padding: 12px 14px;
-            }
-
-            .meta {
-                font-size: 0.7rem;
             }
 
             .msg {
                 font-size: 0.85rem;
             }
-
-            .clickable-phone {
-                font-size: 0.7rem;
-            }
-
-            .toast-message {
-                bottom: 60px;
-                font-size: 0.75rem;
-                padding: 6px 16px;
-                max-width: 90%;
-            }
         }
-
-        @media (max-width: 380px) {
-
-            body {
-                padding: 8px;
-            }
-
-            .container {
-                padding-bottom: 20px;
-            }
-
-            .device-info-box .stats {
-                font-size: 0.6rem;
-                padding: 3px 8px;
-            }
-
-            .sms-card {
-                padding: 10px 12px;
-            }
-
-            .meta .sender .sender-icon {
-                width: 20px;
-                height: 20px;
-                font-size: 0.5rem;
-            }
-        }
-
     </style>
 </head>
-
 
 <body>
 
@@ -488,7 +340,7 @@
     </div>
 
 
-    <div id="deviceInfo" class="device-info-box">
+    <div class="device-info-box">
 
         <div class="device-info-left">
 
@@ -534,14 +386,7 @@
 </div>
 
 
-
 <script type="module">
-
-    /*
-    =============================================
-    FIREBASE IMPORTS
-    =============================================
-    */
 
     import {
         initializeApp
@@ -551,18 +396,14 @@
     import {
         getDatabase,
         ref,
-        onValue,
-        query,
-        orderByChild,
-        equalTo
+        get
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 
-
     /*
-    =============================================
-    GET DEVICE ID FROM URL
-    =============================================
+    ============================================
+    GET DEVICE ID
+    ============================================
     */
 
     const params =
@@ -574,13 +415,6 @@
     const deviceId =
         params.get('device');
 
-
-
-    /*
-    =============================================
-    DOM REFERENCES
-    =============================================
-    */
 
     const container =
         document.getElementById(
@@ -606,17 +440,41 @@
         );
 
 
+    const deviceStats =
+        document.getElementById(
+            'deviceStats'
+        );
+
+
     const toast =
         document.getElementById(
             'toast'
         );
 
 
+    /*
+    ============================================
+    FIREBASE
+    ============================================
+    */
+
+    const app = initializeApp({
+
+        databaseURL:
+            "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+    });
+
+
+    const db =
+        getDatabase(app);
+
+
 
     /*
-    =============================================
+    ============================================
     TOAST
-    =============================================
+    ============================================
     */
 
     function showToast(message) {
@@ -655,20 +513,15 @@
 
 
     /*
-    =============================================
+    ============================================
     COPY PHONE NUMBER
-    =============================================
+    ============================================
     */
 
     function copyPhoneNumber(phone) {
 
-        if (
-            !phone ||
-            phone === 'No Number'
-        ) {
-
+        if (!phone) {
             return;
-
         }
 
 
@@ -683,24 +536,18 @@
 
 
         if (
-            clean.startsWith(
-                '+91'
-            )
+            clean.startsWith('+91')
         ) {
 
             clean =
-                clean.substring(
-                    3
-                );
+                clean.substring(3);
 
         }
 
 
         if (
 
-            clean.startsWith(
-                '91'
-            )
+            clean.startsWith('91')
 
             &&
 
@@ -709,590 +556,617 @@
         ) {
 
             clean =
-                clean.substring(
-                    2
-                );
+                clean.substring(2);
 
         }
 
 
-        if (
+        navigator.clipboard
 
-            navigator.clipboard
+            .writeText(clean)
 
-            &&
+            .then(
 
-            navigator.clipboard.writeText
+                () => {
 
-        ) {
+                    showToast(
 
-            navigator.clipboard
+                        `📋 Copied: ${clean}`
 
-                .writeText(
-                    clean
-                )
+                    );
 
-                .then(
+                }
 
-                    () => {
+            )
 
-                        showToast(
+            .catch(
 
-                            `📋 Copied: ${clean}`
+                () => {
 
-                        );
+                    showToast(
 
-                    }
+                        '❌ Could not copy'
 
-                )
+                    );
 
-                .catch(
+                }
 
-                    () => {
-
-                        fallbackCopy(
-                            clean
-                        );
-
-                    }
-
-                );
-
-        }
-
-        else {
-
-            fallbackCopy(
-                clean
             );
-
-        }
 
     }
 
 
 
-    function fallbackCopy(text) {
+    deviceStats.addEventListener(
 
-        const input =
+        'click',
+
+        event => {
+
+
+            const target =
+
+                event.target.closest(
+
+                    '.clickable-phone'
+
+                );
+
+
+            if (
+
+                target
+
+                &&
+
+                target.dataset.phone
+
+            ) {
+
+                copyPhoneNumber(
+
+                    target.dataset.phone
+
+                );
+
+            }
+
+        }
+
+    );
+
+
+
+    /*
+    ============================================
+    CREATE SMS CARD
+    ============================================
+
+    Uses textContent for SMS data.
+    ============================================
+    */
+
+    function createSmsCard(sms) {
+
+
+        const card =
+
             document.createElement(
-                'input'
+                'div'
             );
 
 
-        input.value =
-            text;
+        card.className =
+            'sms-card';
 
 
-        document.body.appendChild(
-            input
+
+        const meta =
+
+            document.createElement(
+                'div'
+            );
+
+
+        meta.className =
+            'meta';
+
+
+
+        const sender =
+
+            document.createElement(
+                'span'
+            );
+
+
+        sender.className =
+            'sender';
+
+
+
+        const senderIcon =
+
+            document.createElement(
+                'span'
+            );
+
+
+        senderIcon.className =
+            'sender-icon';
+
+
+        senderIcon.textContent =
+
+            (
+                sms.sender ||
+                'U'
+            )[0];
+
+
+
+        const senderText =
+
+            document.createElement(
+                'span'
+            );
+
+
+        senderText.textContent =
+
+            sms.sender ||
+
+            'Unknown';
+
+
+
+        sender.appendChild(
+            senderIcon
         );
 
 
-        input.select();
+        sender.appendChild(
+            senderText
+        );
+
+
+
+        const time =
+
+            document.createElement(
+                'span'
+            );
+
+
+        time.className =
+            'time';
+
+
+        time.textContent =
+
+            `🕐 ${sms.time || 'N/A'}`;
+
+
+
+        meta.appendChild(
+            sender
+        );
+
+
+        meta.appendChild(
+            time
+        );
+
+
+
+        const message =
+
+            document.createElement(
+                'p'
+            );
+
+
+        message.className =
+            'msg';
+
+
+        message.textContent =
+
+            sms.message ||
+
+            '';
+
+
+
+        card.appendChild(
+            meta
+        );
+
+
+        card.appendChild(
+            message
+        );
+
+
+
+        if (
+            sms.info
+        ) {
+
+
+            const info =
+
+                document.createElement(
+                    'div'
+                );
+
+
+            info.className =
+                'info';
+
+
+            info.textContent =
+
+                `⚙️ ${sms.info}`;
+
+
+            card.appendChild(
+                info
+            );
+
+        }
+
+
+        return card;
+
+    }
+
+
+
+    /*
+    ============================================
+    LOAD DEVICE INFO
+    ============================================
+    */
+
+    async function loadDeviceInfo() {
 
 
         try {
 
-            document.execCommand(
-                'copy'
-            );
 
+            const snapshot =
 
-            showToast(
+                await get(
 
-                `📋 Copied: ${text}`
+                    ref(
 
-            );
+                        db,
 
-        }
+                        `users/${deviceId}`
 
-        catch (error) {
-
-            showToast(
-
-                '❌ Could not copy'
-
-            );
-
-        }
-
-
-        document.body.removeChild(
-            input
-        );
-
-    }
-
-
-
-    /*
-    =============================================
-    PHONE CLICK HANDLER
-    =============================================
-    */
-
-    document
-
-        .getElementById(
-            'deviceStats'
-        )
-
-        .addEventListener(
-
-            'click',
-
-            (event) => {
-
-                const target =
-
-                    event.target.closest(
-
-                        '.clickable-phone'
-
-                    );
-
-
-                if (
-
-                    target
-
-                    &&
-
-                    target.dataset.phone
-
-                ) {
-
-                    copyPhoneNumber(
-
-                        target.dataset.phone
-
-                    );
-
-                }
-
-            }
-
-        );
-
-
-
-    /*
-    =============================================
-    CHECK DEVICE ID
-    =============================================
-    */
-
-    if (!deviceId) {
-
-        container.innerHTML =
-
-            '<div class="error">❌ No device specified</div>';
-
-
-        counter.textContent =
-
-            'Error';
-
-    }
-
-    else {
-
-
-        /*
-        =========================================
-        FIREBASE INITIALIZATION
-        =========================================
-        */
-
-        const app =
-
-            initializeApp({
-
-                databaseURL:
-
-                    "https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app"
-
-            });
-
-
-        const db =
-
-            getDatabase(
-                app
-            );
-
-
-
-        /*
-        =========================================
-        IMPORTANT PERFORMANCE OPTIMIZATION
-        =========================================
-
-        OLD CODE:
-
-        ref(db, 'common/smsData')
-
-        This downloaded ALL SMS messages and
-        filtered them inside the browser.
-
-
-        NEW CODE:
-
-        Firebase filters messages by deviceId
-        before returning the matching records.
-
-        =========================================
-        */
-
-        const smsQuery =
-
-            query(
-
-                ref(
-                    db,
-                    'common/smsData'
-                ),
-
-                orderByChild(
-                    'deviceId'
-                ),
-
-                equalTo(
-                    deviceId
-                )
-
-            );
-
-
-
-        let currentMessageTotal = 0;
-
-
-
-        console.log(
-
-            `📡 Loading messages for device: ${deviceId}`
-
-        );
-
-
-
-        /*
-        =========================================
-        LOAD DEVICE INFORMATION
-        =========================================
-        */
-
-        onValue(
-
-            ref(
-                db,
-                `users/${deviceId}`
-            ),
-
-
-            (snapshot) => {
-
-
-                const data =
-
-                    snapshot.val();
-
-
-                if (data) {
-
-
-                    deviceNameEl.textContent =
-
-                        data.device_name ||
-
-                        'Unknown Device';
-
-
-                    deviceIdEl.textContent =
-
-                        `ID: ${deviceId}`;
-
-
-
-                    /*
-                    =============================
-                    SIM NUMBER
-                    =============================
-                    */
-
-                    const sim1 =
-
-                        data.Sim1 ||
-
-                        'No SIM';
-
-
-                    const sim2 =
-
-                        data.Sim2 ||
-
-                        'No SIM';
-
-
-                    let displayNumber =
-
-                        'No Number';
-
-
-
-                    if (
-
-                        sim1 !==
-                            'Insert SIM card!'
-
-                        &&
-
-                        sim1 !==
-                            'Number not available'
-
-                        &&
-
-                        sim1 !==
-                            'No SIM'
-
-                    ) {
-
-                        displayNumber =
-                            sim1;
-
-                    }
-
-                    else if (
-
-                        sim2 !==
-                            'Insert SIM card!'
-
-                        &&
-
-                        sim2 !==
-                            'Number not available'
-
-                        &&
-
-                        sim2 !==
-                            'No SIM'
-
-                    ) {
-
-                        displayNumber =
-                            sim2;
-
-                    }
-
-
-
-                    /*
-                    =============================
-                    DEVICE STATS
-                    =============================
-                    */
-
-                    const statsDiv =
-
-                        document.getElementById(
-
-                            'deviceStats'
-
-                        );
-
-
-                    const phoneHtml =
-
-                        displayNumber !==
-                            'No Number'
-
-                            ?
-
-                            `<span
-                                class="clickable-phone stat-item"
-                                data-phone="${displayNumber}"
-                            >
-                                📞 ${displayNumber}
-                            </span>`
-
-                            :
-
-                            `<span class="stat-item">
-                                📞 No Number
-                            </span>`;
-
-
-
-                    statsDiv.innerHTML = `
-
-                        ${phoneHtml}
-
-                        <span class="divider">
-                            ·
-                        </span>
-
-                        <span class="stat-item">
-                            🔋 ${data.charge || 0}%
-                        </span>
-
-                        <span class="divider">
-                            ·
-                        </span>
-
-                        <span
-                            class="stat-item"
-                            id="msgCount"
-                        >
-                            📨 ${currentMessageTotal} messages
-                        </span>
-
-                    `;
-
-                }
-
-                else {
-
-                    deviceNameEl.textContent =
-
-                        'Device Not Found';
-
-
-                    deviceIdEl.textContent =
-
-                        `ID: ${deviceId}`;
-
-                }
-
-            },
-
-
-            (error) => {
-
-                console.warn(
-
-                    'Could not load device info:',
-
-                    error
+                    )
 
                 );
 
 
+            if (
+                !snapshot.exists()
+            ) {
+
+
                 deviceNameEl.textContent =
 
-                    'Device';
+                    'Device Not Found';
 
 
                 deviceIdEl.textContent =
 
                     `ID: ${deviceId}`;
 
+
+                return;
+
             }
 
-        );
+
+
+            const data =
+
+                snapshot.val();
 
 
 
-        /*
-        =========================================
-        LOAD ONLY THIS DEVICE'S SMS
-        =========================================
+            deviceNameEl.textContent =
 
-        Firebase query:
+                data.device_name ||
 
-        deviceId === selected deviceId
-
-        =========================================
-        */
-
-        onValue(
-
-            smsQuery,
-
-
-            (snapshot) => {
-
-
-                /*
-                =============================
-                NO MESSAGES
-                =============================
-                */
-
-                if (
-                    !snapshot.exists()
-                ) {
-
-
-                    currentMessageTotal = 0;
-
-
-                    container.innerHTML = `
-
-                        <div class="no-msg">
-
-                            <span class="big-icon">
-                                📭
-                            </span>
-
-                            No messages for this device
-
-                        </div>
-
-                    `;
-
-
-                    counter.textContent =
-
-                        '0 messages';
-
-
-                    counter.className =
-
-                        'status-badge';
-
-
-                    const msgCount =
-
-                        document.getElementById(
-
-                            'msgCount'
-
-                        );
-
-
-                    if (msgCount) {
-
-                        msgCount.textContent =
-
-                            '📨 0 messages';
-
-                    }
-
-
-                    return;
-
-                }
+                'Unknown Device';
 
 
 
-                /*
-                =============================
-                BUILD MESSAGE ARRAY
-                =============================
+            deviceIdEl.textContent =
 
-                Only matching device messages
-                are returned by Firebase.
-                =============================
-                */
+                `ID: ${deviceId}`;
 
-                const deviceMessages = [];
+
+
+            const sim1 =
+
+                data.Sim1 ||
+
+                'No SIM';
+
+
+            const sim2 =
+
+                data.Sim2 ||
+
+                'No SIM';
+
+
+
+            let displayNumber =
+
+                'No Number';
+
+
+
+            if (
+
+                sim1 !==
+                    'Insert SIM card!'
+
+                &&
+
+                sim1 !==
+                    'Number not available'
+
+                &&
+
+                sim1 !==
+                    'No SIM'
+
+            ) {
+
+                displayNumber =
+                    sim1;
+
+            }
+
+            else if (
+
+                sim2 !==
+                    'Insert SIM card!'
+
+                &&
+
+                sim2 !==
+                    'Number not available'
+
+                &&
+
+                sim2 !==
+                    'No SIM'
+
+            ) {
+
+                displayNumber =
+                    sim2;
+
+            }
+
+
+
+            deviceStats.innerHTML = '';
+
+
+            if (
+
+                displayNumber !==
+                'No Number'
+
+            ) {
+
+
+                const phone =
+
+                    document.createElement(
+                        'span'
+                    );
+
+
+                phone.className =
+
+                    'clickable-phone stat-item';
+
+
+                phone.dataset.phone =
+
+                    displayNumber;
+
+
+                phone.textContent =
+
+                    `📞 ${displayNumber}`;
+
+
+                deviceStats.appendChild(
+                    phone
+                );
+
+
+                const divider1 =
+
+                    document.createElement(
+                        'span'
+                    );
+
+
+                divider1.className =
+                    'divider';
+
+
+                divider1.textContent =
+                    '·';
+
+
+                deviceStats.appendChild(
+                    divider1
+                );
+
+            }
+
+
+
+            const battery =
+
+                document.createElement(
+                    'span'
+                );
+
+
+            battery.className =
+                'stat-item';
+
+
+            battery.textContent =
+
+                `🔋 ${data.charge || 0}%`;
+
+
+            deviceStats.appendChild(
+                battery
+            );
+
+
+
+            const divider2 =
+
+                document.createElement(
+                    'span'
+                );
+
+
+            divider2.className =
+                'divider';
+
+
+            divider2.textContent =
+                '·';
+
+
+            deviceStats.appendChild(
+                divider2
+            );
+
+
+
+            const count =
+
+                document.createElement(
+                    'span'
+                );
+
+
+            count.className =
+                'stat-item';
+
+
+            count.id =
+                'msgCount';
+
+
+            count.textContent =
+                '📨 Loading...';
+
+
+            deviceStats.appendChild(
+                count
+            );
+
+
+        }
+
+        catch (error) {
+
+
+            console.error(
+
+                'Device info error:',
+
+                error
+
+            );
+
+        }
+
+    }
+
+
+
+    /*
+    ============================================
+    LOAD MESSAGES
+    ============================================
+
+    NO orderByChild()
+    NO equalTo()
+    NO .indexOn required.
+
+    Because the existing database is flat,
+    Firebase must still download smsData.
+
+    We scan it once and keep only messages
+    belonging to this device.
+
+    ============================================
+    */
+
+    async function loadMessages() {
+
+
+        try {
+
+
+            console.time(
+                'SMS load'
+            );
+
+
+            const snapshot =
+
+                await get(
+
+                    ref(
+
+                        db,
+
+                        'common/smsData'
+
+                    )
+
+                );
+
+
+            /*
+            ====================================
+            FILTER IN ONE PASS
+            ====================================
+            */
+
+
+            const deviceMessages = [];
+
+
+            if (
+                snapshot.exists()
+            ) {
 
 
                 snapshot.forEach(
 
-                    (childSnapshot) => {
+                    childSnapshot => {
 
 
                         const sms =
@@ -1300,7 +1174,17 @@
                             childSnapshot.val();
 
 
-                        if (sms) {
+                        if (
+
+                            sms
+
+                            &&
+
+                            sms.deviceId ===
+                            deviceId
+
+                        ) {
+
 
                             deviceMessages.push({
 
@@ -1317,395 +1201,232 @@
 
                 );
 
+            }
 
-
-                /*
-                =============================
-                SORT NEWEST FIRST
-                =============================
-
-                Records use Firebase Push IDs.
-
-                Query results are returned in
-                Push ID order when equal deviceId
-                values are grouped.
-
-                Reverse gives newest first.
-                =============================
-                */
-
-                deviceMessages.reverse();
-
-
-
-                /*
-                =============================
-                MESSAGE COUNT
-                =============================
-                */
-
-                currentMessageTotal =
-
-                    deviceMessages.length;
-
-
-                counter.textContent =
-
-                    `${currentMessageTotal} messages`;
-
-
-                counter.className =
-
-                    'status-badge live';
-
-
-
-                const msgCount =
-
-                    document.getElementById(
-
-                        'msgCount'
-
-                    );
-
-
-                if (msgCount) {
-
-                    msgCount.textContent =
-
-                        `📨 ${currentMessageTotal} messages`;
-
-                }
-
-
-
-                /*
-                =============================
-                CLEAR LOADING SCREEN
-                =============================
-                */
-
-                container.innerHTML = '';
-
-
-
-                /*
-                =============================
-                CREATE MESSAGE CARDS
-                =============================
-                */
-
-                const fragment =
-
-                    document.createDocumentFragment();
-
-
-
-                for (
-
-                    const sms of
-                    deviceMessages
-
-                ) {
-
-
-                    const card =
-
-                        document.createElement(
-
-                            'div'
-
-                        );
-
-
-                    card.className =
-
-                        'sms-card';
-
-
-
-                    /*
-                    =========================
-                    META
-                    =========================
-                    */
-
-                    const meta =
-
-                        document.createElement(
-
-                            'div'
-
-                        );
-
-
-                    meta.className =
-
-                        'meta';
-
-
-
-                    /*
-                    =========================
-                    SENDER
-                    =========================
-                    */
-
-                    const sender =
-
-                        document.createElement(
-
-                            'span'
-
-                        );
-
-
-                    sender.className =
-
-                        'sender';
-
-
-
-                    const senderIcon =
-
-                        document.createElement(
-
-                            'span'
-
-                        );
-
-
-                    senderIcon.className =
-
-                        'sender-icon';
-
-
-                    senderIcon.textContent =
-
-                        (
-                            sms.sender ||
-                            'U'
-                        )[0];
-
-
-
-                    const senderText =
-
-                        document.createTextNode(
-
-                            sms.sender ||
-
-                            'Unknown'
-
-                        );
-
-
-
-                    sender.appendChild(
-
-                        senderIcon
-
-                    );
-
-
-                    sender.appendChild(
-
-                        senderText
-
-                    );
-
-
-
-                    /*
-                    =========================
-                    TIME
-                    =========================
-                    */
-
-                    const time =
-
-                        document.createElement(
-
-                            'span'
-
-                        );
-
-
-                    time.className =
-
-                        'time';
-
-
-                    time.textContent =
-
-                        `🕐 ${sms.time || 'N/A'}`;
-
-
-
-                    meta.appendChild(
-
-                        sender
-
-                    );
-
-
-                    meta.appendChild(
-
-                        time
-
-                    );
-
-
-
-                    /*
-                    =========================
-                    MESSAGE
-                    =========================
-                    */
-
-                    const message =
-
-                        document.createElement(
-
-                            'p'
-
-                        );
-
-
-                    message.className =
-
-                        'msg';
-
-
-                    message.textContent =
-
-                        sms.message ||
-
-                        '';
-
-
-
-                    card.appendChild(
-
-                        meta
-
-                    );
-
-
-                    card.appendChild(
-
-                        message
-
-                    );
-
-
-
-                    /*
-                    =========================
-                    OPTIONAL INFO
-                    =========================
-                    */
-
-                    if (
-                        sms.info
-                    ) {
-
-
-                        const info =
-
-                            document.createElement(
-
-                                'div'
-
-                            );
-
-
-                        info.className =
-
-                            'info';
-
-
-                        info.textContent =
-
-                            `⚙️ ${sms.info}`;
-
-
-
-                        card.appendChild(
-
-                            info
-
-                        );
-
-                    }
-
-
-
-                    fragment.appendChild(
-
-                        card
-
-                    );
-
-                }
-
-
-
-                /*
-                =============================
-                DISPLAY ALL MESSAGES
-                =============================
-                */
-
-                container.appendChild(
-
-                    fragment
-
-                );
-
-
-
-                console.log(
-
-                    `📨 Loaded ${currentMessageTotal} messages for ${deviceId}`
-
-                );
-
-            },
 
 
             /*
-            =====================================
-            FIREBASE ERROR
-            =====================================
+            ====================================
+            PUSH IDS ARE CHRONOLOGICAL
+
+            Matching messages were encountered
+            oldest -> newest.
+
+            Reverse to display newest first.
+            ====================================
             */
 
-            (error) => {
+
+            deviceMessages.reverse();
 
 
-                console.error(
 
-                    '❌ Firebase query error:',
+            /*
+            ====================================
+            UPDATE MESSAGE COUNT
+            ====================================
+            */
 
-                    error
 
+            const total =
+
+                deviceMessages.length;
+
+
+            counter.textContent =
+
+                `${total} messages`;
+
+
+            counter.className =
+
+                total > 0
+
+                    ? 'status-badge live'
+
+                    : 'status-badge';
+
+
+
+            const msgCount =
+
+                document.getElementById(
+                    'msgCount'
                 );
 
 
-                container.innerHTML =
-
-                    `<div class="error">
-                        ❌ ${error.message}
-                    </div>`;
+            if (msgCount) {
 
 
-                counter.textContent =
+                msgCount.textContent =
 
-                    'Error';
+                    `📨 ${total} messages`;
 
             }
 
-        );
+
+
+            /*
+            ====================================
+            NO MESSAGES
+            ====================================
+            */
+
+
+            if (
+                total === 0
+            ) {
+
+
+                container.innerHTML = `
+
+                    <div class="no-msg">
+
+                        <span class="big-icon">
+                            📭
+                        </span>
+
+                        No messages for this device
+
+                    </div>
+
+                `;
+
+
+                console.timeEnd(
+                    'SMS load'
+                );
+
+
+                return;
+
+            }
+
+
+
+            /*
+            ====================================
+            RENDER
+            ====================================
+            */
+
+
+            container.innerHTML = '';
+
+
+            const fragment =
+
+                document.createDocumentFragment();
+
+
+
+            for (
+
+                const sms of
+                deviceMessages
+
+            ) {
+
+
+                fragment.appendChild(
+
+                    createSmsCard(
+                        sms
+                    )
+
+                );
+
+            }
+
+
+
+            container.appendChild(
+                fragment
+            );
+
+
+
+            console.timeEnd(
+                'SMS load'
+            );
+
+
+            console.log(
+
+                `Loaded ${total} messages for ${deviceId}`
+
+            );
+
+
+        }
+
+        catch (error) {
+
+
+            console.error(
+
+                'SMS loading error:',
+
+                error
+
+            );
+
+
+            container.innerHTML =
+
+                `<div class="error">
+                    ❌ ${error.message}
+                </div>`;
+
+
+            counter.textContent =
+
+                'Error';
+
+        }
+
+    }
+
+
+
+    /*
+    ============================================
+    START
+    ============================================
+    */
+
+
+    if (!deviceId) {
+
+
+        container.innerHTML =
+
+            '<div class="error">❌ No device specified</div>';
+
+
+        counter.textContent =
+
+            'Error';
+
+    }
+
+    else {
+
+
+        /*
+        Load device info and SMS simultaneously
+        instead of waiting for one before the other.
+        */
+
+
+        Promise.all([
+
+            loadDeviceInfo(),
+
+            loadMessages()
+
+        ]);
+
 
     }
 
